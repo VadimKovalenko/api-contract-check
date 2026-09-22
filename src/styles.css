@@ -1,0 +1,90 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, var(--color-accent-tint) 0, var(--color-transparent) 320px),
+    linear-gradient(135deg, var(--color-bg-start) 0%, var(--color-bg) 48%, var(--color-bg-end) 100%);
+}
+
+button, input, textarea { font: inherit; }
+
+button {
+  cursor: pointer;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+button:disabled { cursor: not-allowed; opacity: 0.68; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: clamp(2.15rem, 4vw, 4rem); line-height: 0.98; letter-spacing: 0; font-weight: 850; }
+h2 { font-size: 1.12rem; }
+h3 { font-size: 0.92rem; color: var(--color-text-heading); }
+
+.eyebrow {
+  color: var(--color-eyebrow);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.run-button, .method-pill, .state-pill, .segmented button {
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+}
+
+.metric-card, .panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-large);
+  backdrop-filter: blur(14px);
+}
+
+.panel {
+  border-radius: 8px;
+  padding: 22px;
+  min-height: 620px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.method-pill, .state-pill {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  color: var(--color-text-control);
+  background: var(--color-surface-raised);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.state-pill.good { color: var(--color-success-soft); background: var(--color-success-bg); border-color: var(--color-success-border-strong); }
+.state-pill.bad { color: var(--color-danger-pill-text); background: var(--color-danger-bg); border-color: var(--color-danger-border-strong); }
+
+@media (max-width: 980px) {
+  .panel { min-height: auto; }
+}

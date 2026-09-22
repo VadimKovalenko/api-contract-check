@@ -1,0 +1,10 @@
+aws_region          = "us-east-1"
+availability_zone   = "us-east-1a"
+app_name            = "api-contract-check"
+blueprint_id        = "ubuntu_24_04"
+bundle_id           = "nano_3_0"
+ssh_key_pair_name   = "your-lightsail-key-name"
+ssh_cidrs           = ["203.0.113.10/32"]
+route53_zone_name   = "example.com"
+domain_name         = "api-check.example.com"
+create_www_record   = false

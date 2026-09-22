@@ -1,0 +1,225 @@
+.app-shell {
+  width: min(1480px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 34px 0 40px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+
+.privacy-banner {
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px max(16px, calc((100vw - 1480px) / 2 + 16px));
+  margin: -34px calc(50% - 50vw) 24px;
+  color: var(--color-privacy-banner-text);
+  background: linear-gradient(135deg, var(--color-privacy-banner-start), var(--color-privacy-banner-end));
+  border: 1px solid var(--color-privacy-banner-border);
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  box-shadow: var(--shadow-privacy-banner);
+}
+
+.privacy-banner-copy,
+.privacy-banner-actions,
+.privacy-icon-button,
+.privacy-modal-actions,
+.privacy-repo-link {
+  display: flex;
+  align-items: center;
+}
+
+.privacy-banner-copy {
+  gap: 10px;
+  min-width: 0;
+}
+
+.privacy-banner-copy svg {
+  flex: 0 0 auto;
+  color: var(--color-privacy-banner-icon);
+}
+
+.privacy-banner-copy p {
+  color: var(--color-privacy-banner-text);
+  font-size: 0.92rem;
+  font-weight: 760;
+  line-height: 1.45;
+}
+
+.privacy-banner-actions {
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.privacy-link-button,
+.privacy-icon-button,
+.privacy-repo-link {
+  min-height: 36px;
+  color: var(--color-text-control);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+}
+
+.privacy-banner .privacy-link-button,
+.privacy-banner .privacy-icon-button {
+  color: var(--color-privacy-banner-control-text);
+  background: var(--color-privacy-banner-control-bg);
+  border-color: var(--color-privacy-banner-control-border);
+}
+
+.privacy-link-button {
+  padding: 0 13px;
+  font-weight: 800;
+}
+
+.privacy-icon-button {
+  width: 36px;
+  justify-content: center;
+  padding: 0;
+}
+
+.privacy-link-button:hover,
+.privacy-icon-button:hover,
+.privacy-repo-link:hover {
+  color: var(--color-text-control-hover);
+  background: var(--color-surface-raised-hover);
+}
+
+.privacy-banner .privacy-link-button:hover,
+.privacy-banner .privacy-icon-button:hover {
+  color: var(--color-privacy-banner-text-strong);
+  background: var(--color-privacy-banner-control-bg-hover);
+}
+
+.privacy-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--color-privacy-modal-backdrop);
+  backdrop-filter: blur(10px);
+}
+
+.privacy-modal {
+  width: min(560px, 100%);
+  padding: 22px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-large);
+}
+
+.privacy-modal-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.privacy-modal-heading h2 {
+  color: var(--color-text-heading);
+  font-size: 1.28rem;
+  line-height: 1.2;
+}
+
+.privacy-modal-body {
+  display: grid;
+  gap: 12px;
+  color: var(--color-text-soft);
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.privacy-modal-actions {
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.privacy-repo-link {
+  gap: 8px;
+  padding: 0 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.run-button {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  color: var(--color-text-on-accent);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-warm));
+  box-shadow: 0 16px 42px var(--color-action-shadow);
+}
+
+.run-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 52px var(--color-action-shadow-hover);
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.85fr) minmax(420px, 1.15fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.spin { animation: spin 0.8s linear infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+
+@media (max-width: 980px) {
+  .topbar { align-items: stretch; flex-direction: column; }
+  .run-button { justify-content: center; }
+  .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workspace-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .app-shell { width: min(100% - 20px, 1480px); padding-top: 18px; }
+  .privacy-banner {
+    margin-top: -18px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+  .privacy-banner,
+  .privacy-modal-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .privacy-banner-actions,
+  .privacy-link-button,
+  .privacy-repo-link {
+    width: 100%;
+    justify-content: center;
+  }
+  .privacy-banner-actions { align-items: stretch; }
+  .privacy-icon-button { align-self: center; }
+  .metric-grid { grid-template-columns: 1fr; }
+  h1 { font-size: 2rem; }
+}

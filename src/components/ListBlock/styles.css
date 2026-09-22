@@ -1,0 +1,31 @@
+.list-block {
+  border-radius: 8px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  padding: 15px;
+}
+
+.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+.chip-list span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.78rem;
+}
+
+.chip-list.missing span {
+  color: var(--color-danger-text-soft);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+}
+
+.chip-list.present span {
+  color: var(--color-success-text);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+}
+
+.muted { color: var(--color-text-muted-strong); margin-top: 10px; font-size: 0.9rem; line-height: 1.45; }
