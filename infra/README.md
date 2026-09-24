@@ -53,7 +53,34 @@ The instance bootstrap installs Node.js 20, nginx, creates an `app` user, writes
 
 ## Deploy App Code
 
-One simple first deployment path:
+Release tags build and publish a deployable artifact through GitHub Actions.
+Tags should use semantic versioning:
+
+```sh
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The release workflow runs lint, tests, and build, then creates an archive with
+the runtime files needed by the Lightsail host. Deployment is skipped until the
+production environment is configured in GitHub.
+
+To enable Lightsail deployment, create a GitHub environment named `production`
+and add:
+
+- Repository or environment variable `LIGHTSAIL_HOST`: the Lightsail public DNS
+  name or static IP.
+- Optional variable `LIGHTSAIL_USER`: SSH user, defaults to `ubuntu`.
+- Environment secret `LIGHTSAIL_SSH_PRIVATE_KEY`: private key for the Lightsail
+  SSH key pair.
+
+When `LIGHTSAIL_HOST` is set, each `v*` tag copies the release archive to the
+instance, extracts it under `/opt/api-contract-check/releases/<tag>`, installs
+production dependencies, points `/opt/api-contract-check/current` at that
+release, restarts the systemd service, reloads nginx, and checks the local nginx
+response.
+
+One manual deployment path, useful before GitHub Actions is connected:
 
 ```sh
 npm ci
