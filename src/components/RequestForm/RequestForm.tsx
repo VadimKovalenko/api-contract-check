@@ -1,8 +1,15 @@
-import type { FormEvent, KeyboardEvent } from 'react';
+import type { FormEvent } from 'react';
 import { useRef, useState } from 'react';
+import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { yaml } from '@codemirror/lang-yaml';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { EditorView } from '@codemirror/view';
+import { oneDarkTheme } from '@codemirror/theme-one-dark';
+import { tags } from '@lezer/highlight';
 import { KeyRound, Sparkles } from 'lucide-react';
-import { applyYamlTab, formatYamlSpec, useAuthTypes } from './hooks';
+import { formatYamlSpec, useAuthTypes } from './hooks';
 import type { CheckFormState, RunCheck, UpdateFormField } from '../../types';
+import { colors } from '../../colors';
 import './styles.css';
 
 interface RequestFormProps {
@@ -15,9 +22,62 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Unable to format YAML.';
 }
 
+const yamlHighlightStyle = HighlightStyle.define([
+  { tag: [tags.definition(tags.propertyName), tags.labelName], class: 'cm-yaml-key' },
+  { tag: [tags.content, tags.string, tags.number, tags.attributeValue], class: 'cm-yaml-value' },
+  { tag: [tags.bool, tags.null, tags.atom, tags.typeName], class: 'cm-yaml-literal' },
+  { tag: [tags.comment, tags.lineComment], class: 'cm-yaml-comment' },
+  { tag: [tags.punctuation, tags.separator, tags.squareBracket, tags.brace], class: 'cm-yaml-punctuation' },
+]);
+
+const yamlEditorTheme = EditorView.theme({
+  '&': {
+    flex: '1',
+    minHeight: '360px',
+    color: colors.text,
+    backgroundColor: colors.surfaceStrong,
+    border: `1px solid ${colors.border}`,
+    borderRadius: '8px',
+    fontSize: '0.85rem',
+    transition: 'border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease',
+  },
+  '&.cm-focused': {
+    outline: 'none',
+    borderColor: colors.accentFocus,
+    backgroundColor: colors.surfaceStrongFocus,
+    boxShadow: `0 0 0 3px ${colors.accentFocusRing}`,
+  },
+  '.cm-scroller': {
+    minHeight: '360px',
+    fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", monospace',
+    lineHeight: '1.5',
+  },
+  '.cm-content': {
+    minHeight: '360px',
+    padding: '14px',
+    caretColor: colors.text,
+  },
+  '.cm-cursor, .cm-dropCursor': {
+    borderLeftColor: colors.text,
+  },
+  '.cm-gutters': {
+    color: colors.textMutedStrong,
+    backgroundColor: colors.surfaceMuted,
+    borderRight: `1px solid ${colors.borderSubtle}`,
+  },
+  '.cm-activeLine, .cm-activeLineGutter': {
+    backgroundColor: colors.surfaceRaised,
+  },
+  '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
+    backgroundColor: colors.accentFocusRing,
+  },
+});
+
+const yamlEditorExtensions = [yaml(), oneDarkTheme, syntaxHighlighting(yamlHighlightStyle), yamlEditorTheme];
+
 export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProps) {
   const authTypes = useAuthTypes();
-  const yamlInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const yamlEditorRef = useRef<ReactCodeMirrorRef | null>(null);
   const [formatError, setFormatError] = useState('');
 
   function updateYamlSpec(value: string) {
@@ -27,28 +87,15 @@ export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProp
 
   function restoreYamlSelection(selectionStart: number, selectionEnd: number) {
     requestAnimationFrame(() => {
-      yamlInputRef.current?.focus();
-      yamlInputRef.current?.setSelectionRange(selectionStart, selectionEnd);
+      const view = yamlEditorRef.current?.view;
+
+      if (!view) {
+        return;
+      }
+
+      view.focus();
+      view.dispatch({ selection: { anchor: selectionStart, head: selectionEnd } });
     });
-  }
-
-  function handleYamlKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key !== 'Tab') {
-      return;
-    }
-
-    event.preventDefault();
-    setFormatError('');
-
-    const next = applyYamlTab(
-      form.yamlSpec,
-      event.currentTarget.selectionStart,
-      event.currentTarget.selectionEnd,
-      event.shiftKey,
-    );
-
-    onUpdateField('yamlSpec', next.value);
-    restoreYamlSelection(next.selectionStart, next.selectionEnd);
   }
 
   function handleFormatYaml() {
@@ -121,12 +168,16 @@ export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProp
             Auto Format
           </button>
         </div>
-        <textarea
-          ref={yamlInputRef}
+        <CodeMirror
+          ref={yamlEditorRef}
+          className="yaml-editor"
           value={form.yamlSpec}
-          onChange={(event) => updateYamlSpec(event.target.value)}
-          onKeyDown={handleYamlKeyDown}
-          spellCheck="false"
+          extensions={yamlEditorExtensions}
+          basicSetup={{ foldGutter: false }}
+          height="100%"
+          indentWithTab
+          onChange={updateYamlSpec}
+          theme="none"
         />
         {formatError && <p className="format-error">{formatError}</p>}
       </div>

@@ -12,7 +12,7 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [id, name]
+                required: [ id, name ]
                 properties:
                   id:
                     type: number

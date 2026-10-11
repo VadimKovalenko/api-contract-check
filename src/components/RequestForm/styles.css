@@ -41,6 +41,37 @@ textarea {
   font-size: 0.85rem;
 }
 
+.yaml-editor {
+  flex: 1;
+  min-height: 360px;
+}
+
+.yaml-editor .cm-editor {
+  height: 100%;
+}
+
+.yaml-editor .cm-yaml-key {
+  color: var(--color-yaml-key) !important;
+  font-weight: 700;
+}
+
+.yaml-editor .cm-yaml-value {
+  color: var(--color-yaml-value) !important;
+}
+
+.yaml-editor .cm-yaml-literal {
+  color: var(--color-yaml-literal) !important;
+}
+
+.yaml-editor .cm-yaml-comment {
+  color: var(--color-yaml-comment) !important;
+  font-style: italic;
+}
+
+.yaml-editor .cm-yaml-punctuation {
+  color: var(--color-yaml-punctuation) !important;
+}
+
 input:focus, textarea:focus {
   border-color: var(--color-accent-focus);
   background: var(--color-surface-strong-focus);
