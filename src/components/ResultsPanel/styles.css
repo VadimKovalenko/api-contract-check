@@ -54,15 +54,26 @@
   background: linear-gradient(90deg, var(--color-danger-hot), var(--color-accent-warm) 55%, var(--color-accent-strong));
 }
 
-.preview-block pre {
-  max-height: 360px;
-  overflow: auto;
-  margin: 12px 0 0;
-  padding: 14px;
-  border-radius: 8px;
-  color: var(--color-text-preview);
-  background: var(--color-preview-bg);
-  border: 1px solid var(--color-border-subtle);
-  font-size: 0.82rem;
-  line-height: 1.45;
+.json-preview-editor {
+  margin-top: 12px;
+}
+
+.json-preview-editor .cm-json-key {
+  color: var(--color-json-key) !important;
+}
+
+.json-preview-editor .cm-json-string {
+  color: var(--color-json-string) !important;
+}
+
+.json-preview-editor .cm-json-number {
+  color: var(--color-json-number) !important;
+}
+
+.json-preview-editor .cm-json-literal {
+  color: var(--color-json-literal) !important;
+}
+
+.json-preview-editor .cm-json-punctuation {
+  color: var(--color-json-punctuation) !important;
 }

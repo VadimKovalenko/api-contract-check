@@ -1,8 +1,16 @@
+import CodeMirror from '@uiw/react-codemirror';
+import { json } from '@codemirror/lang-json';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { EditorState } from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
+import { oneDarkTheme } from '@codemirror/theme-one-dark';
+import { tags } from '@lezer/highlight';
 import { AlertTriangle, Server } from 'lucide-react';
 import { ListBlock } from '../ListBlock';
 import { resultLists } from './constants';
 import { useCoverageStyle, useValidationErrorItems } from './hooks';
 import type { CheckResult } from '../../types';
+import { colors } from '../../colors';
 import './styles.css';
 
 interface ResultsPanelProps {
@@ -10,9 +18,56 @@ interface ResultsPanelProps {
   result: CheckResult | null;
 }
 
+const jsonHighlightStyle = HighlightStyle.define([
+  { tag: tags.propertyName, class: 'cm-json-key' },
+  { tag: tags.string, class: 'cm-json-string' },
+  { tag: tags.number, class: 'cm-json-number' },
+  { tag: [tags.bool, tags.null], class: 'cm-json-literal' },
+  { tag: [tags.punctuation, tags.separator, tags.squareBracket, tags.brace], class: 'cm-json-punctuation' },
+]);
+
+const jsonPreviewTheme = EditorView.theme({
+  '&': {
+    maxHeight: '360px',
+    overflow: 'hidden',
+    color: colors.textPreview,
+    backgroundColor: colors.previewBackground,
+    border: `1px solid ${colors.borderSubtle}`,
+    borderRadius: '8px',
+    fontSize: '0.82rem',
+  },
+  '.cm-scroller': {
+    maxHeight: '360px',
+    overflow: 'auto',
+    fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", monospace',
+    lineHeight: '1.45',
+  },
+  '.cm-content': {
+    padding: '14px',
+  },
+  '.cm-gutters': {
+    color: colors.textMutedStrong,
+    backgroundColor: colors.surfaceMuted,
+    borderRight: `1px solid ${colors.borderSubtle}`,
+  },
+  '.cm-activeLine, .cm-activeLineGutter': {
+    backgroundColor: colors.transparent,
+  },
+});
+
+const jsonPreviewExtensions = [
+  json(),
+  oneDarkTheme,
+  syntaxHighlighting(jsonHighlightStyle),
+  jsonPreviewTheme,
+  EditorState.readOnly.of(true),
+  EditorView.editable.of(false),
+];
+
 export function ResultsPanel({ error, result }: ResultsPanelProps) {
   const validationErrorItems = useValidationErrorItems(result);
   const coverageStyle = useCoverageStyle(result);
+  const responsePreview = result ? JSON.stringify(result.responsePreview, null, 2) : '';
 
   return (
     <section className="panel results-panel">
@@ -57,7 +112,14 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
 
           <div className="preview-block">
             <h3>Response preview</h3>
-            <pre>{JSON.stringify(result.responsePreview, null, 2)}</pre>
+            <CodeMirror
+              aria-label="Response preview JSON"
+              basicSetup={{ foldGutter: false, lineNumbers: false }}
+              className="json-preview-editor"
+              extensions={jsonPreviewExtensions}
+              theme="none"
+              value={responsePreview}
+            />
           </div>
         </div>
       )}
