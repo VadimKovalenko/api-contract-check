@@ -58,6 +58,7 @@ export interface ResultListConfig {
   title: string;
   key: 'missingFields' | 'missingRequiredFields' | 'missingOptionalFields' | 'unlistedFields' | 'presentFields';
   emptyText: string;
+  infoText?: string;
   tone: Tone;
 }
 

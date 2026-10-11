@@ -39,6 +39,19 @@ const jsonPreviewTheme = EditorView.theme({
     overflow: 'auto',
     fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", monospace',
     lineHeight: '1.45',
+    scrollbarColor: 'var(--color-preview-scrollbar-thumb) var(--color-preview-scrollbar-track)',
+  },
+  '.cm-scroller::-webkit-scrollbar': {
+    width: '12px',
+    height: '12px',
+  },
+  '.cm-scroller::-webkit-scrollbar-track': {
+    backgroundColor: 'var(--color-preview-scrollbar-track)',
+  },
+  '.cm-scroller::-webkit-scrollbar-thumb': {
+    backgroundColor: 'var(--color-preview-scrollbar-thumb)',
+    border: '3px solid var(--color-preview-scrollbar-track)',
+    borderRadius: '999px',
   },
   '.cm-content': {
     padding: '14px',
@@ -97,8 +110,15 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
             <div className="meter"><span style={coverageStyle} /></div>
           </div>
 
-          {resultLists.map(({ emptyText, key, title, tone }) => (
-            <ListBlock emptyText={emptyText} items={result[key]} key={key} title={title} tone={tone} />
+          {resultLists.map(({ emptyText, infoText, key, title, tone }) => (
+            <ListBlock
+              emptyText={emptyText}
+              infoText={infoText}
+              items={result[key]}
+              key={key}
+              title={title}
+              tone={tone}
+            />
           ))}
           <ListBlock
             title="Validation errors"

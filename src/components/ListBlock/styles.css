@@ -5,6 +5,64 @@
   padding: 15px;
 }
 
+.list-block-heading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.info-tip {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+}
+
+.info-tip-button {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--color-text-control-muted);
+  background: var(--color-transparent);
+  border: 0;
+  border-radius: 999px;
+}
+
+.info-tip-button:hover,
+.info-tip-button:focus-visible {
+  color: var(--color-text-control-hover);
+  background: var(--color-transparent);
+}
+
+.info-tip-text {
+  width: min(280px, 72vw);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 4;
+  padding: 9px 10px;
+  color: var(--color-text);
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-large);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(4px);
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
+}
+
+.info-tip:hover .info-tip-text,
+.info-tip:focus-within .info-tip-text {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 
 .chip-list span {
