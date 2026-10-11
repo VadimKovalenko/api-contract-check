@@ -22,6 +22,18 @@
   border: 1px solid var(--color-danger-border);
 }
 
+.chip-list.optional span {
+  color: var(--color-warning-text);
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+}
+
+.chip-list.unlisted span {
+  color: var(--color-orange-text);
+  background: var(--color-orange-bg);
+  border: 1px solid var(--color-orange-border);
+}
+
 .chip-list.present span {
   color: var(--color-success-text);
   background: var(--color-success-bg);

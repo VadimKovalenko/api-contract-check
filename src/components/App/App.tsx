@@ -48,7 +48,7 @@ export function App() {
           <p className="eyebrow">Contract monitor</p>
           <h1>API Schema Coverage</h1>
         </div>
-        <button className="run-button" onClick={runCheck} disabled={loading} type="button">
+        <button className="run-button" onClick={() => void runCheck()} disabled={loading} type="button">
           {loading ? <Loader2 className="spin" size={18} /> : <Play size={18} />}
           Run GET Check
         </button>

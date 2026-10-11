@@ -1,3 +1,5 @@
+import type { StyleVars } from './types';
+
 export const colors = {
   background: '#20262b',
   backgroundStart: '#242b30',
@@ -42,6 +44,12 @@ export const colors = {
   successBorderStrong: 'rgb(57 217 138 / 0.28)',
   warning: '#f7b955',
   warningWarm: '#f28a3e',
+  warningText: '#ffe0a6',
+  warningBackground: 'rgb(247 185 85 / 0.11)',
+  warningBorder: 'rgb(247 185 85 / 0.28)',
+  orangeText: '#ffd0a3',
+  orangeBackground: 'rgb(242 138 62 / 0.12)',
+  orangeBorder: 'rgb(242 138 62 / 0.32)',
   privacyBannerText: '#2e1b08',
   privacyBannerTextStrong: '#241405',
   privacyBannerControlText: '#3a230b',
@@ -73,9 +81,9 @@ export const colors = {
   shadowLarge: '0 22px 70px rgb(0 0 0 / 0.34)',
   shadowCardHover: '0 24px 74px rgb(0 0 0 / 0.38)',
   transparent: 'transparent',
-};
+} as const;
 
-export const colorVariables = {
+export const colorVariables: StyleVars = {
   '--color-bg': colors.background,
   '--color-bg-start': colors.backgroundStart,
   '--color-bg-end': colors.backgroundEnd,
@@ -119,6 +127,12 @@ export const colorVariables = {
   '--color-success-border-strong': colors.successBorderStrong,
   '--color-warning': colors.warning,
   '--color-warning-warm': colors.warningWarm,
+  '--color-warning-text': colors.warningText,
+  '--color-warning-bg': colors.warningBackground,
+  '--color-warning-border': colors.warningBorder,
+  '--color-orange-text': colors.orangeText,
+  '--color-orange-bg': colors.orangeBackground,
+  '--color-orange-border': colors.orangeBorder,
   '--color-privacy-banner-text': colors.privacyBannerText,
   '--color-privacy-banner-text-strong': colors.privacyBannerTextStrong,
   '--color-privacy-banner-control-text': colors.privacyBannerControlText,
@@ -152,7 +166,7 @@ export const colorVariables = {
   '--color-transparent': colors.transparent,
 };
 
-export function applyColorTheme(target = document.documentElement) {
+export function applyColorTheme(target: HTMLElement = document.documentElement) {
   Object.entries(colorVariables).forEach(([property, value]) => {
     target.style.setProperty(property, value);
   });

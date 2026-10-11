@@ -2,7 +2,7 @@
 
 ## Styling
 
-- Keep color values centralized in `src/colors.js`.
+- Keep color values centralized in `src/colors.ts`.
 - Component CSS should use the CSS variables exported through `colorVariables`; do not add raw hex, `rgb()`, or `rgba()` values directly in style files.
 - If a new visual treatment needs a new color, add a named token to `colors` and expose it in `colorVariables`.
 

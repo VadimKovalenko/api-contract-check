@@ -33,7 +33,7 @@ npm run build
 npm start
 ```
 
-`npm run build` writes the client bundle to `dist/`, which is intentionally excluded from version control.
+`npm run build` writes the client bundle to `dist/` and the compiled server to `dist-server/`; both are intentionally excluded from version control.
 
 Production-oriented nginx, systemd, and Lightsail Terraform files live in `infra/`.
 
@@ -53,5 +53,5 @@ test/     Node test runner tests
 
 ## Notes
 
-- `node_modules/`, `dist/`, coverage output, local environment files, logs, and editor metadata are ignored by Git.
+- `node_modules/`, `dist/`, `dist-server/`, coverage output, local environment files, logs, and editor metadata are ignored by Git.
 - Keep secrets out of committed files. Use local environment files when configuration is needed.

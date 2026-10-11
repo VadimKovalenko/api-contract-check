@@ -42,7 +42,7 @@ jobs:
       - name: Package runtime files
         run: |
           mkdir -p release-package
-          cp -R dist server package.json package-lock.json release-package/
+          cp -R dist dist-server package.json package-lock.json release-package/
           tar -czf "api-contract-check-${GITHUB_REF_NAME}.tar.gz" -C release-package .
 
       - name: Upload release artifact

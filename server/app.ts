@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import {
   buildHeaders,
@@ -6,17 +6,18 @@ import {
   normalizeCheckError,
 } from './check.js';
 import { fetchEndpoint, redactSecrets } from './outboundFetch.js';
+import type { CheckRequestBody, OutboundFetch } from './types.js';
 
 const HTTP_BAD_REQUEST = 400;
 const HTTP_BAD_GATEWAY = 502;
 
-export function createApp({ outboundFetch = fetchEndpoint } = {}) {
+export function createApp({ outboundFetch = fetchEndpoint }: { outboundFetch?: OutboundFetch } = {}) {
   const app = express();
 
   app.use(cors());
   app.use(express.json({ limit: '2mb' }));
 
-  app.post('/api/check', async (req, res) => {
+  app.post('/api/check', async (req: Request<unknown, unknown, CheckRequestBody>, res: Response) => {
     const started = performance.now();
 
     try {
@@ -26,7 +27,7 @@ export function createApp({ outboundFetch = fetchEndpoint } = {}) {
         return res.status(HTTP_BAD_REQUEST).json({ error: 'A valid URL is required.' });
       }
 
-      let parsedUrl;
+      let parsedUrl: URL;
       try {
         parsedUrl = new URL(url);
       } catch {
@@ -46,9 +47,9 @@ export function createApp({ outboundFetch = fetchEndpoint } = {}) {
       const rawBody = response.body ?? '';
       const responseTimeMs = Math.round(performance.now() - started);
 
-      let json;
+      let json: unknown;
       try {
-        json = rawBody ? JSON.parse(rawBody) : null;
+        json = rawBody ? JSON.parse(rawBody) as unknown : null;
       } catch {
         return res.status(HTTP_BAD_GATEWAY).json({
           error: 'The endpoint did not return valid JSON.',

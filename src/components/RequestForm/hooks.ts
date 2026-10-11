@@ -1,15 +1,15 @@
 import YAML from 'yaml';
-import { authTypes } from './constants.js';
+import { authTypes } from './constants';
 
 export function useAuthTypes() {
   return authTypes;
 }
 
-export function formatYamlSpec(value) {
+export function formatYamlSpec(value: string) {
   const document = YAML.parseDocument(value);
 
   if (document.errors.length > 0) {
-    throw new Error(document.errors[0].message);
+    throw new Error(document.errors[0]?.message ?? 'Invalid YAML.');
   }
 
   return document.toString({
@@ -18,7 +18,18 @@ export function formatYamlSpec(value) {
   });
 }
 
-export function applyYamlTab(value, selectionStart, selectionEnd, outdent = false) {
+export interface YamlTabResult {
+  value: string;
+  selectionStart: number;
+  selectionEnd: number;
+}
+
+export function applyYamlTab(
+  value: string,
+  selectionStart: number,
+  selectionEnd: number,
+  outdent = false,
+): YamlTabResult {
   if (selectionStart === selectionEnd) {
     return outdent
       ? outdentAtCursor(value, selectionStart)
@@ -63,7 +74,7 @@ export function applyYamlTab(value, selectionStart, selectionEnd, outdent = fals
   };
 }
 
-function getRemovedBeforeSelection(lines, lineStart, selectionStart) {
+function getRemovedBeforeSelection(lines: string[], lineStart: number, selectionStart: number) {
   let offset = lineStart;
   let removedBeforeSelection = 0;
 
@@ -84,7 +95,7 @@ function getRemovedBeforeSelection(lines, lineStart, selectionStart) {
   return removedBeforeSelection;
 }
 
-function outdentAtCursor(value, selectionStart) {
+function outdentAtCursor(value: string, selectionStart: number): YamlTabResult {
   const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
   const beforeCursor = value.slice(lineStart, selectionStart);
   const removable = beforeCursor.endsWith('  ') ? 2 : beforeCursor.endsWith('\t') ? 1 : 0;

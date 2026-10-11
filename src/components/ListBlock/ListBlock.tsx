@@ -1,8 +1,16 @@
 import { defaultTone } from './constants';
 import { useListItems } from './hooks';
+import type { Tone } from '../../types';
 import './styles.css';
 
-export function ListBlock({ title, items, emptyText, tone = defaultTone }) {
+interface ListBlockProps {
+  title: string;
+  items?: string[];
+  emptyText: string;
+  tone?: Tone;
+}
+
+export function ListBlock({ title, items, emptyText, tone = defaultTone }: ListBlockProps) {
   const { hasItems, items: normalizedItems } = useListItems(items);
 
   return (

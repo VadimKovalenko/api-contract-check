@@ -2,9 +2,15 @@ import { AlertTriangle, Server } from 'lucide-react';
 import { ListBlock } from '../ListBlock';
 import { resultLists } from './constants';
 import { useCoverageStyle, useValidationErrorItems } from './hooks';
+import type { CheckResult } from '../../types';
 import './styles.css';
 
-export function ResultsPanel({ error, result }) {
+interface ResultsPanelProps {
+  error: string;
+  result: CheckResult | null;
+}
+
+export function ResultsPanel({ error, result }: ResultsPanelProps) {
   const validationErrorItems = useValidationErrorItems(result);
   const coverageStyle = useCoverageStyle(result);
 

@@ -1,4 +1,5 @@
 import { CheckCircle2, Clock3, Server, ShieldCheck } from 'lucide-react';
+import type { CheckFormState, MetricCardConfig } from '../../types';
 
 export const sampleSpec = `openapi: 3.0.0
 paths:
@@ -37,7 +38,7 @@ paths:
                           type: string
 `;
 
-export const initialState = {
+export const initialState: CheckFormState = {
   url: 'https://jsonplaceholder.typicode.com/users/1',
   authType: 'none',
   token: '',
@@ -47,7 +48,7 @@ export const initialState = {
   yamlSpec: sampleSpec,
 };
 
-export const metricCards = [
+export const metricCards: MetricCardConfig[] = [
   {
     icon: ShieldCheck,
     label: 'Response validity',
@@ -56,7 +57,7 @@ export const metricCards = [
   },
   {
     icon: CheckCircle2,
-    label: 'Data coverage',
+    label: 'Response Data Coverage',
     getValue: (result) => (result ? `${result.coveragePercent}%` : '--'),
     getTone: (_result, health) => health,
     getMeter: (result) => result?.coveragePercent ?? 0,

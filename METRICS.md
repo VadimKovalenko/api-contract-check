@@ -10,12 +10,12 @@ Current measured snapshot:
 
 | Metric | Value | Notes |
 | --- | ---: | --- |
-| Tracked project lines | 2,623 | Excludes `node_modules/` and `dist/`; includes this file. |
-| Tests | 12 pass / 0 fail | Measured with `npm test` on `2026-09-22`. |
-| Test duration | 409.976ms | Reported by Node test runner. |
-| Build duration | 1.40s | Reported by Vite. |
-| Lint result | pass | Measured with `npm run lint` on `2026-09-22`. |
-| First project file birth | 2026-09-20 15:28:19 +0400 | `index.js`. |
+| Tracked project lines | 8,170 | Excludes `node_modules/`, `dist/`, `dist-server/`, and `.git`; includes this file. |
+| Tests | 12 pass / 0 fail | Measured with `npm test` on `2026-09-24`. |
+| Test duration | 402.047962ms | Reported by Node test runner. |
+| Build duration | 1.43s | Vite-reported client build duration; server TypeScript compile also completed. |
+| Lint result | pass | Measured with `npm run lint` on `2026-09-24`. |
+| First project file birth | 2026-09-20 15:28:19 +0400 | Historical root `index.js`, removed during TypeScript migration. |
 | Last pre-metrics app artifact | 2026-09-21 15:17:48 +0400 | `dist/` build artifacts. |
 | Metrics tracker created | 2026-09-22 09:37:05 +0400 | `METRICS.md`. |
 
@@ -28,7 +28,9 @@ Token, cache, and thinking-time values below are estimates unless marked as meas
 | 2026-09-20 | bootstrap | Codex | Create React/Vite client, Express API, schema coverage logic, and initial project structure | 80,000 | 14,000 | 94,000 | n/a | n/a | ~45m | ~1h 30m | pass | Estimated from `index.js` birth time and first-day file timestamps. |
 | 2026-09-21 | hardening | Codex | Add outbound fetch protection, tests, README notes, infra files, lint/build cleanup | 115,000 | 20,000 | 135,000 | n/a | n/a | ~1h 10m | ~2h 15m | pass | Estimated from server, test, infra, README, package, and build artifact timestamps. |
 | 2026-09-22 | metrics | Codex | Add and populate project metrics tracker | 10,000 | 2,000 | 12,000 | n/a | n/a | ~2m | ~12m | pass | Estimated from this metrics session; test/build/lint values are measured. |
-| 2026-09-20..2026-09-22 | **Total aggregation** | Codex | Vibe-coded project baseline through metrics tracker | 205,000 | 36,000 | 241,000 | n/a | n/a | ~1h 57m | ~3h 57m active / ~42h elapsed | pass | Manual cross-project estimate; elapsed range starts at `index.js` creation and ends after metrics population. |
+| 2026-09-24 | typescript-migration | Codex | Rewrite backend and frontend JavaScript to TypeScript, update tooling, release packaging, docs, and verification scripts | ~145,000 | ~24,000 | ~169,000 | n/a | n/a | ~50m | ~1h 10m | pass | Token and thinking-time values are estimates; lint/build/test values are measured from this session. |
+| 2026-09-24 | claude-skill-metrics | Codex | Update metrics regarding `.claude/skills/project-metrics-update` | ~4,000 | ~700 | ~4,700 | n/a | n/a | ~3m | ~8m | pass | Token and thinking-time values are estimates; cache telemetry unavailable. Run completed on `2026-09-24`; the referenced skill file already existed before this session. No tests, lint, or build were run for this docs-only metrics update. |
+| 2026-09-20..2026-09-24 | **Total aggregation** | Codex | Vibe-coded project baseline through latest metrics update | ~354,000 | ~60,700 | ~414,700 | n/a | n/a | ~2h 50m | ~5h 15m active / ~4d elapsed | pass | Manual sum of raw run-log rows above; elapsed range starts at `index.js` creation and ends after the `.claude/skills/project-metrics-update` metrics row. |
 
 ## Metrics Dictionary
 

@@ -2,14 +2,16 @@ import js from '@eslint/js';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'infra/**'],
+    ignores: ['dist/**', 'dist-server/**', 'node_modules/**', 'coverage/**', 'infra/**'],
   },
   js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
-    files: ['src/**/*.{js,jsx}'],
+    files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -32,7 +34,7 @@ export default [
     },
   },
   {
-    files: ['server/**/*.js', 'vite.config.js'],
+    files: ['server/**/*.ts', 'vite.config.ts'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -42,7 +44,7 @@ export default [
     },
   },
   {
-    files: ['test/**/*.js'],
+    files: ['test/**/*.ts'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

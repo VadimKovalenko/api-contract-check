@@ -1,26 +1,38 @@
+import type { FormEvent, KeyboardEvent } from 'react';
 import { useRef, useState } from 'react';
 import { KeyRound, Sparkles } from 'lucide-react';
 import { applyYamlTab, formatYamlSpec, useAuthTypes } from './hooks';
+import type { CheckFormState, RunCheck, UpdateFormField } from '../../types';
 import './styles.css';
 
-export function RequestForm({ form, onRunCheck, onUpdateField }) {
+interface RequestFormProps {
+  form: CheckFormState;
+  onRunCheck: RunCheck;
+  onUpdateField: UpdateFormField;
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Unable to format YAML.';
+}
+
+export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProps) {
   const authTypes = useAuthTypes();
-  const yamlInputRef = useRef(null);
+  const yamlInputRef = useRef<HTMLTextAreaElement | null>(null);
   const [formatError, setFormatError] = useState('');
 
-  function updateYamlSpec(value) {
+  function updateYamlSpec(value: string) {
     setFormatError('');
     onUpdateField('yamlSpec', value);
   }
 
-  function restoreYamlSelection(selectionStart, selectionEnd) {
+  function restoreYamlSelection(selectionStart: number, selectionEnd: number) {
     requestAnimationFrame(() => {
       yamlInputRef.current?.focus();
       yamlInputRef.current?.setSelectionRange(selectionStart, selectionEnd);
     });
   }
 
-  function handleYamlKeyDown(event) {
+  function handleYamlKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key !== 'Tab') {
       return;
     }
@@ -46,12 +58,16 @@ export function RequestForm({ form, onRunCheck, onUpdateField }) {
       onUpdateField('yamlSpec', formatted);
       restoreYamlSelection(formatted.length, formatted.length);
     } catch (error) {
-      setFormatError(error.message || 'Unable to format YAML.');
+      setFormatError(getErrorMessage(error));
     }
   }
 
+  function handleSubmit(event: FormEvent) {
+    void onRunCheck(event);
+  }
+
   return (
-    <form className="panel input-panel" onSubmit={onRunCheck}>
+    <form className="panel input-panel" onSubmit={handleSubmit}>
       <div className="panel-heading">
         <div>
           <p className="eyebrow">Request</p>

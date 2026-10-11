@@ -86,6 +86,9 @@ test('coverage is 100% when all documented fields are present', () => {
 
   assert.equal(result.coveragePercent, 100);
   assert.deepEqual(result.missingFields, []);
+  assert.deepEqual(result.missingRequiredFields, []);
+  assert.deepEqual(result.missingOptionalFields, []);
+  assert.deepEqual(result.unlistedFields, []);
 });
 
 test('optional documented fields missing reduce coverage', () => {
@@ -98,6 +101,60 @@ test('optional documented fields missing reduce coverage', () => {
 
   assert.equal(result.coveragePercent, 89);
   assert.deepEqual(result.missingFields, ['email']);
+  assert.deepEqual(result.missingRequiredFields, []);
+  assert.deepEqual(result.missingOptionalFields, ['email']);
+  assert.deepEqual(result.unlistedFields, []);
+});
+
+test('missing required fields are reported separately from optional fields', () => {
+  const result = calculateCoverage(userSchema, {
+    id: 1,
+    profile: { title: 'Engineer' },
+  });
+
+  assert.ok(result.missingFields.includes('name'));
+  assert.ok(result.missingFields.includes('email'));
+  assert.ok(result.missingFields.includes('profile.timezone'));
+  assert.deepEqual(result.missingRequiredFields, ['name']);
+  assert.deepEqual(result.missingOptionalFields, ['email', 'profile.timezone', 'groups']);
+  assert.deepEqual(result.unlistedFields, []);
+});
+
+test('response fields outside schema properties are reported as unlisted', () => {
+  const result = calculateCoverage(
+    {
+      type: 'object',
+      required: ['id', 'name'],
+      properties: {
+        name: { type: 'string' },
+        profile: {
+          type: 'object',
+          properties: {
+            title: { type: 'string' },
+          },
+        },
+        groups: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              label: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    {
+      id: 1,
+      name: 'Ada',
+      profile: { title: 'Engineer', timezone: 'UTC' },
+      groups: [{ id: 'admin', label: 'Admins' }],
+      extra: true,
+    },
+  );
+
+  assert.deepEqual(result.unlistedFields, ['id', 'extra', 'profile.timezone', 'groups[].id']);
+  assert.deepEqual(result.missingRequiredFields, []);
 });
 
 test('nested object fields are counted individually', () => {
@@ -112,6 +169,8 @@ test('nested object fields are counted individually', () => {
   assert.equal(result.total, 9);
   assert.ok(result.presentFields.includes('profile.title'));
   assert.ok(result.missingFields.includes('profile.timezone'));
+  assert.ok(result.missingOptionalFields.includes('profile.timezone'));
+  assert.deepEqual(result.unlistedFields, []);
 });
 
 test('documented array field missing reduces coverage without double counting item fields', () => {
@@ -125,6 +184,7 @@ test('documented array field missing reduces coverage without double counting it
   assert.equal(result.total, 7);
   assert.equal(result.coveragePercent, 86);
   assert.deepEqual(result.missingFields, ['groups']);
+  assert.deepEqual(result.unlistedFields, []);
 });
 
 test('invalid YAML failures are surfaced', () => {
@@ -185,6 +245,9 @@ test('POST /api/check fetches JSON and returns validation and coverage', async (
     assert.equal(body.valid, true);
     assert.equal(body.coveragePercent, 60);
     assert.deepEqual(body.missingFields, ['profile', 'groups']);
+    assert.deepEqual(body.missingRequiredFields, []);
+    assert.deepEqual(body.missingOptionalFields, ['profile', 'groups']);
+    assert.deepEqual(body.unlistedFields, []);
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }
