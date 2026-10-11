@@ -72,6 +72,6 @@ export const metricCards: MetricCardConfig[] = [
     icon: Clock3,
     label: 'Response time',
     getValue: (result) => (result ? `${result.responseTimeMs}ms` : '--'),
-    getTone: () => 'cool',
+    getTone: (result) => (result ? 'cool' : 'neutral'),
   },
 ];

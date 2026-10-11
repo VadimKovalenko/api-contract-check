@@ -1,15 +1,15 @@
-import { ExternalLink, Loader2, Play, ShieldCheck, X } from 'lucide-react';
+import { ExternalLink, Loader2, Moon, Play, ShieldCheck, Sun, X } from 'lucide-react';
 import { useState } from 'react';
-import { colorVariables } from '../../colors';
 import { MetricCard } from '../MetricCard';
 import { RequestForm } from '../RequestForm';
 import { ResultsPanel } from '../ResultsPanel';
 import { metricCards } from './constants';
-import { useSchemaCheck } from './hooks';
+import { useSchemaCheck, useThemeController } from './hooks';
 import './styles.css';
 
 export function App() {
   const { error, form, health, loading, result, runCheck, updateField } = useSchemaCheck();
+  const { isLightTheme, theme, themeStyle, toggleTheme } = useThemeController();
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [privacyVisible, setPrivacyVisible] = useState(true);
 
@@ -18,7 +18,7 @@ export function App() {
   }
 
   return (
-    <main className="app-shell" style={colorVariables}>
+    <main className="app-shell" data-theme={theme} style={themeStyle}>
       {privacyVisible ? (
         <section className="privacy-banner" aria-label="Privacy notice">
           <div className="privacy-banner-copy">
@@ -48,10 +48,30 @@ export function App() {
           <p className="eyebrow">Contract monitor</p>
           <h1>API Schema Coverage</h1>
         </div>
-        <button className="run-button" onClick={() => void runCheck()} disabled={loading} type="button">
-          {loading ? <Loader2 className="spin" size={18} /> : <Play size={18} />}
-          Run GET Check
-        </button>
+        <div className="topbar-actions">
+          <button
+            aria-checked={isLightTheme}
+            aria-label="Switch light theme"
+            className="theme-toggle"
+            onClick={toggleTheme}
+            role="switch"
+            type="button"
+          >
+            <span className="theme-toggle-track">
+              <span className="theme-toggle-icon">
+                <Moon size={15} />
+              </span>
+              <span className="theme-toggle-icon">
+                <Sun size={15} />
+              </span>
+              <span className="theme-toggle-thumb" />
+            </span>
+          </button>
+          <button className="run-button" onClick={() => void runCheck()} disabled={loading} type="button">
+            {loading ? <Loader2 className="spin" size={18} /> : <Play size={18} />}
+            Run GET Check
+          </button>
+        </div>
       </section>
 
       <section className="metric-grid" aria-label="Check summary">

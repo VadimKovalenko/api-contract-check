@@ -3,14 +3,12 @@ import { json } from '@codemirror/lang-json';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
-import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { tags } from '@lezer/highlight';
 import { AlertTriangle, Server } from 'lucide-react';
 import { ListBlock } from '../ListBlock';
 import { resultLists } from './constants';
 import { useCoverageStyle, useValidationErrorItems } from './hooks';
 import type { CheckResult } from '../../types';
-import { colors } from '../../colors';
 import './styles.css';
 
 interface ResultsPanelProps {
@@ -30,9 +28,9 @@ const jsonPreviewTheme = EditorView.theme({
   '&': {
     maxHeight: '360px',
     overflow: 'hidden',
-    color: colors.textPreview,
-    backgroundColor: colors.previewBackground,
-    border: `1px solid ${colors.borderSubtle}`,
+    color: 'var(--color-text-preview)',
+    backgroundColor: 'var(--color-preview-bg)',
+    border: '1px solid var(--color-border-subtle)',
     borderRadius: '8px',
     fontSize: '0.82rem',
   },
@@ -46,18 +44,17 @@ const jsonPreviewTheme = EditorView.theme({
     padding: '14px',
   },
   '.cm-gutters': {
-    color: colors.textMutedStrong,
-    backgroundColor: colors.surfaceMuted,
-    borderRight: `1px solid ${colors.borderSubtle}`,
+    color: 'var(--color-text-muted-strong)',
+    backgroundColor: 'var(--color-surface-muted)',
+    borderRight: '1px solid var(--color-border-subtle)',
   },
   '.cm-activeLine, .cm-activeLineGutter': {
-    backgroundColor: colors.transparent,
+    backgroundColor: 'var(--color-transparent)',
   },
 });
 
 const jsonPreviewExtensions = [
   json(),
-  oneDarkTheme,
   syntaxHighlighting(jsonHighlightStyle),
   jsonPreviewTheme,
   EditorState.readOnly.of(true),

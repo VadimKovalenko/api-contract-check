@@ -4,12 +4,10 @@ import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { yaml } from '@codemirror/lang-yaml';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorView } from '@codemirror/view';
-import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { tags } from '@lezer/highlight';
 import { KeyRound, Sparkles } from 'lucide-react';
 import { formatYamlSpec, useAuthTypes } from './hooks';
 import type { CheckFormState, RunCheck, UpdateFormField } from '../../types';
-import { colors } from '../../colors';
 import './styles.css';
 
 interface RequestFormProps {
@@ -34,18 +32,18 @@ const yamlEditorTheme = EditorView.theme({
   '&': {
     flex: '1',
     minHeight: '360px',
-    color: colors.text,
-    backgroundColor: colors.surfaceStrong,
-    border: `1px solid ${colors.border}`,
+    color: 'var(--color-text)',
+    backgroundColor: 'var(--color-surface-strong)',
+    border: '1px solid var(--color-border)',
     borderRadius: '8px',
     fontSize: '0.85rem',
     transition: 'border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease',
   },
   '&.cm-focused': {
     outline: 'none',
-    borderColor: colors.accentFocus,
-    backgroundColor: colors.surfaceStrongFocus,
-    boxShadow: `0 0 0 3px ${colors.accentFocusRing}`,
+    borderColor: 'var(--color-accent-focus)',
+    backgroundColor: 'var(--color-surface-strong-focus)',
+    boxShadow: '0 0 0 3px var(--color-accent-focus-ring)',
   },
   '.cm-scroller': {
     minHeight: '360px',
@@ -55,25 +53,25 @@ const yamlEditorTheme = EditorView.theme({
   '.cm-content': {
     minHeight: '360px',
     padding: '14px',
-    caretColor: colors.text,
+    caretColor: 'var(--color-text)',
   },
   '.cm-cursor, .cm-dropCursor': {
-    borderLeftColor: colors.text,
+    borderLeftColor: 'var(--color-text)',
   },
   '.cm-gutters': {
-    color: colors.textMutedStrong,
-    backgroundColor: colors.surfaceMuted,
-    borderRight: `1px solid ${colors.borderSubtle}`,
+    color: 'var(--color-text-muted-strong)',
+    backgroundColor: 'var(--color-surface-muted)',
+    borderRight: '1px solid var(--color-border-subtle)',
   },
   '.cm-activeLine, .cm-activeLineGutter': {
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: 'var(--color-surface-raised)',
   },
   '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
-    backgroundColor: colors.accentFocusRing,
+    backgroundColor: 'var(--color-accent-focus-ring)',
   },
 });
 
-const yamlEditorExtensions = [yaml(), oneDarkTheme, syntaxHighlighting(yamlHighlightStyle), yamlEditorTheme];
+const yamlEditorExtensions = [yaml(), syntaxHighlighting(yamlHighlightStyle), yamlEditorTheme];
 
 export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProps) {
   const authTypes = useAuthTypes();

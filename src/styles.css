@@ -14,8 +14,12 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    linear-gradient(180deg, var(--color-accent-tint) 0, var(--color-transparent) 320px),
+    radial-gradient(circle at 18% -12%, var(--color-bg-wash) 0, var(--color-transparent) 34rem),
+    radial-gradient(circle at 82% 4%, var(--color-bg-cool) 0, var(--color-transparent) 32rem),
     linear-gradient(135deg, var(--color-bg-start) 0%, var(--color-bg) 48%, var(--color-bg-end) 100%);
+  transition:
+    background-color 0.24s ease,
+    color 0.24s ease;
 }
 
 button, input, textarea { font: inherit; }
@@ -55,6 +59,10 @@ h3 { font-size: 0.92rem; color: var(--color-text-heading); }
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-large);
   backdrop-filter: blur(14px);
+  transition:
+    background-color 0.24s ease,
+    border-color 0.24s ease,
+    box-shadow 0.24s ease;
 }
 
 .panel {
