@@ -8,9 +8,35 @@
   transition: color 0.24s ease;
 }
 
-.app-shell > * {
+.app-shell > :not(.background-fog) {
   position: relative;
+  z-index: 2;
+}
+
+.background-fog {
+  position: fixed;
+  inset: -5vh -12vw auto;
   z-index: 1;
+  height: 76vh;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.82;
+  mask-image: linear-gradient(
+    180deg,
+    var(--color-mask-solid) 0%,
+    var(--color-mask-solid) 74%,
+    var(--color-transparent) 100%
+  );
+  mix-blend-mode: screen;
+}
+
+.background-fog canvas {
+  opacity: 1;
+  filter: saturate(1.24) contrast(1.08);
+}
+
+.app-shell[data-theme="light"] .background-fog {
+  display: none;
 }
 
 .app-shell::before,

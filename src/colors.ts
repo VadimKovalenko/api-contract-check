@@ -189,6 +189,13 @@ const lightColors: ColorPalette = {
 
 export const lightColorVariables = makeColorVariables(lightColors);
 
+export const vantaFogColors = {
+  base: 0x030912,
+  highlight: 0x68f0c8,
+  lowlight: 0x07121f,
+  midtone: 0x1d6c9f,
+} as const;
+
 export function getColorVariables(theme: ThemeMode = 'dark') {
   return theme === 'light' ? lightColorVariables : colorVariables;
 }

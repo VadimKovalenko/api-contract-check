@@ -1,8 +1,9 @@
 import { Box, ExternalLink, Loader2, Moon, Play, ShieldCheck, Sun, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MetricCard } from '../MetricCard';
 import { RequestForm } from '../RequestForm';
 import { ResultsPanel } from '../ResultsPanel';
+import { vantaFogColors } from '../../colors';
 import { metricCards } from './constants';
 import { useAppUiState, useSchemaCheck, useThemeController } from './hooks';
 import './styles.css';
@@ -11,8 +12,51 @@ export function App() {
   const { error, form, health, loading, result, runCheck, updateField } = useSchemaCheck();
   const { featureFlags } = useAppUiState();
   const { isLightTheme, theme, themeStyle, toggleTheme } = useThemeController();
+  const fogRef = useRef<HTMLDivElement | null>(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [privacyVisible, setPrivacyVisible] = useState(true);
+
+  useEffect(() => {
+    const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (theme !== 'dark' || shouldReduceMotion || !fogRef.current) {
+      return undefined;
+    }
+
+    let effect: { destroy: () => void } | undefined;
+    let cancelled = false;
+
+    void Promise.all([
+      import('three'),
+      import('vanta/dist/vanta.fog.min'),
+    ]).then(([THREE, { default: FOG }]) => {
+      if (cancelled || !fogRef.current) {
+        return;
+      }
+
+      effect = FOG({
+        THREE,
+        el: fogRef.current,
+        mouseControls: false,
+        touchControls: false,
+        gyroControls: false,
+        minHeight: 260,
+        minWidth: 320,
+        highlightColor: vantaFogColors.highlight,
+        midtoneColor: vantaFogColors.midtone,
+        lowlightColor: vantaFogColors.lowlight,
+        baseColor: vantaFogColors.base,
+        blurFactor: 0.64,
+        speed: 0.85,
+        zoom: 0.72,
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      effect?.destroy();
+    };
+  }, [theme]);
 
   function dismissPrivacyNotice() {
     setPrivacyVisible(false);
@@ -20,6 +64,7 @@ export function App() {
 
   return (
     <main className="app-shell" data-theme={theme} style={themeStyle}>
+      <div className="background-fog" ref={fogRef} aria-hidden="true" />
       {privacyVisible ? (
         <section className="privacy-banner" aria-label="Privacy notice">
           <div className="privacy-banner-copy">
