@@ -1,7 +1,7 @@
 import type { FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
-import { initialState } from './constants';
+import { initialAppState, initialState } from './constants';
 import { applyColorTheme, getColorVariables, type ThemeMode } from '../../colors';
 import type { AuthType, CheckFormState, CheckResult, HealthTone } from '../../types';
 
@@ -89,6 +89,12 @@ export function useSchemaCheck() {
 
 export type SchemaCheckState = ReturnType<typeof useSchemaCheck>;
 export type { AuthType };
+
+export function useAppUiState() {
+  const [appState] = useState(initialAppState);
+
+  return appState;
+}
 
 export function useThemeController() {
   const [theme, setTheme] = useState<ThemeMode>('dark');

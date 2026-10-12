@@ -1,6 +1,12 @@
 import { CheckCircle2, Clock3, Server, ShieldCheck } from 'lucide-react';
 import type { CheckFormState, MetricCardConfig } from '../../types';
 
+export const initialAppState = {
+  featureFlags: {
+    showTopNavigation: false,
+  },
+};
+
 export const sampleSpec = `openapi: 3.0.0
 paths:
   /users/{id}:
@@ -61,6 +67,7 @@ export const metricCards: MetricCardConfig[] = [
     getValue: (result) => (result ? `${result.coveragePercent}%` : '--'),
     getTone: (_result, health) => health,
     getMeter: (result) => result?.coveragePercent ?? 0,
+    meterVariant: 'ring',
   },
   {
     icon: Server,

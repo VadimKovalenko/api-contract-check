@@ -1,14 +1,45 @@
 .list-block {
   border-radius: 8px;
-  background: var(--color-surface-muted);
-  border: 1px solid var(--color-border);
-  padding: 15px;
+  border: 1px solid var(--color-transparent);
+  background:
+    linear-gradient(var(--color-surface-muted), var(--color-surface-muted)) padding-box,
+    linear-gradient(135deg, var(--color-border), var(--color-border-subtle) 60%, var(--color-border-strong)) border-box;
+  padding: 14px;
 }
 
 .list-block-heading {
   display: flex;
   align-items: center;
   gap: 7px;
+}
+
+.list-block-icon {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--color-icon-accent);
+}
+
+.list-block.missing .list-block-icon,
+.list-block.present .list-block-icon {
+  color: var(--color-success);
+}
+
+.list-block.optional .list-block-icon {
+  color: var(--color-warning);
+}
+
+.list-block.unlisted .list-block-icon,
+.list-block.bad .list-block-icon {
+  color: var(--color-danger-hot);
+}
+
+.list-block-icon svg {
+  width: 20px;
+  height: 20px;
+  filter: drop-shadow(0 0 8px var(--color-accent-tint-border));
 }
 
 .info-tip {
@@ -69,33 +100,46 @@
   max-width: 100%;
   overflow-wrap: anywhere;
   border-radius: 8px;
-  padding: 7px 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-transparent);
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 0.78rem;
+  font-weight: 760;
 }
 
 .chip-list.missing span {
   color: var(--color-danger-text-soft);
-  background: var(--color-danger-bg);
-  border: 1px solid var(--color-danger-border);
+  background:
+    linear-gradient(var(--color-danger-bg), var(--color-danger-bg)) padding-box,
+    linear-gradient(135deg, var(--color-danger-hot), var(--color-danger-border)) border-box;
 }
 
 .chip-list.optional span {
   color: var(--color-warning-text);
-  background: var(--color-warning-bg);
-  border: 1px solid var(--color-warning-border);
+  background:
+    linear-gradient(var(--color-warning-bg), var(--color-warning-bg)) padding-box,
+    linear-gradient(135deg, var(--color-warning), var(--color-warning-warm)) border-box;
 }
 
 .chip-list.unlisted span {
   color: var(--color-orange-text);
-  background: var(--color-orange-bg);
-  border: 1px solid var(--color-orange-border);
+  background:
+    linear-gradient(var(--color-orange-bg), var(--color-orange-bg)) padding-box,
+    linear-gradient(135deg, var(--color-orange-border), var(--color-danger-hot)) border-box;
 }
 
 .chip-list.present span {
   color: var(--color-success-text);
-  background: var(--color-success-bg);
-  border: 1px solid var(--color-success-border);
+  background:
+    linear-gradient(var(--color-success-bg), var(--color-success-bg)) padding-box,
+    linear-gradient(135deg, var(--color-success), var(--color-accent)) border-box;
+}
+
+.user-accessibility-theme-style .chip-list.optional span,
+.user-accessibility-theme-style .chip-list.unlisted span,
+.user-accessibility-theme-style .chip-list.present span,
+.user-accessibility-theme-style .chip-list.missing span {
+  color: var(--color-badge-accessible-text);
 }
 
 .muted { color: var(--color-text-muted-strong); margin-top: 10px; font-size: 0.9rem; line-height: 1.45; }

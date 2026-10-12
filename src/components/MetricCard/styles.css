@@ -1,9 +1,23 @@
+@property --meter-degrees {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
 .metric-card {
-  min-height: 116px;
+  min-height: 94px;
   border-radius: 8px;
-  padding: 18px;
+  padding: 16px 18px;
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--color-transparent);
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    linear-gradient(135deg, var(--color-border-strong), var(--color-border-subtle) 42%, var(--color-border)) border-box;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 14px;
   transition:
     border-color 0.16s ease,
     transform 0.16s ease,
@@ -12,49 +26,97 @@
 
 .metric-card:hover {
   transform: translateY(-1px);
-  border-color: var(--color-border-strong);
   box-shadow: var(--shadow-card-hover);
 }
 
 .metric-card::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  height: 3px;
-  background: var(--color-neutral);
+  content: none;
 }
 
-.metric-card.good::after { background: linear-gradient(90deg, var(--color-success), var(--color-accent)); }
-.metric-card.warn::after { background: linear-gradient(90deg, var(--color-warning), var(--color-warning-warm)); }
-.metric-card.bad::after { background: linear-gradient(90deg, var(--color-danger), var(--color-danger-deep)); }
-.metric-card.cool::after { background: linear-gradient(90deg, var(--color-cool), var(--color-cool-bright)); }
+.metric-card.good {
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    linear-gradient(135deg, var(--color-success), var(--color-accent) 48%, var(--color-border-subtle)) border-box;
+}
+
+.metric-card.warn {
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    linear-gradient(135deg, var(--color-warning), var(--color-warning-warm) 48%, var(--color-border-subtle)) border-box;
+}
+
+.metric-card.bad {
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    linear-gradient(135deg, var(--color-danger-hot), var(--color-danger-deep) 48%, var(--color-border-subtle)) border-box;
+}
+
+.metric-card.cool {
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    linear-gradient(135deg, var(--color-cool-bright), var(--color-cool) 48%, var(--color-border-subtle)) border-box;
+}
 
 .metric-icon {
-  width: 34px;
-  height: 34px;
+  width: 48px;
+  height: 48px;
   display: grid;
   place-items: center;
   color: var(--color-icon-accent);
-  margin-bottom: 12px;
-  border-radius: 8px;
+  margin-bottom: 0;
+  border-radius: 999px;
   background: var(--color-accent-tint);
   border: 1px solid var(--color-accent-tint-border);
 }
 
-.metric-card span { color: var(--color-text-muted); font-size: 0.82rem; }
-.metric-card strong { display: block; font-size: 1.72rem; line-height: 1.1; margin-top: 6px; letter-spacing: 0; }
-
-.mini-meter {
-  width: 100%;
-  height: 8px;
-  background: var(--color-meter-track);
+.metric-ring {
+  --meter-degrees: 0deg;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  color: var(--color-text-heading);
   border-radius: 999px;
-  overflow: hidden;
-  margin-top: 13px;
+  background: var(--color-meter-track);
+  box-shadow: inset 0 0 0 1px var(--color-border-subtle);
+  transition: --meter-degrees 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.mini-meter span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-danger-hot), var(--color-accent-warm) 55%, var(--color-accent-strong));
+.metric-ring::before,
+.metric-ring::after {
+  content: "";
+  position: absolute;
+  border-radius: inherit;
 }
+
+.metric-ring::before {
+  inset: 9px;
+  z-index: 1;
+  background: var(--color-surface);
+}
+
+.metric-ring::after {
+  inset: 0;
+  z-index: 0;
+  background: conic-gradient(
+    var(--color-success) 0deg,
+    var(--color-accent) 120deg,
+    var(--color-warning) 235deg,
+    var(--color-danger-hot) 360deg
+  );
+  -webkit-mask: conic-gradient(#000000 0deg var(--meter-degrees), transparent var(--meter-degrees) 360deg);
+  mask: conic-gradient(#000000 0deg var(--meter-degrees), transparent var(--meter-degrees) 360deg);
+}
+
+.metric-ring span {
+  position: relative;
+  z-index: 2;
+  color: var(--color-text-heading);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.metric-card span { color: var(--color-text-muted); font-size: 0.82rem; }
+.metric-card strong { display: block; font-size: 1.46rem; line-height: 1.1; margin-bottom: 4px; letter-spacing: 0; }
+

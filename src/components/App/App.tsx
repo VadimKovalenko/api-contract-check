@@ -1,14 +1,15 @@
-import { ExternalLink, Loader2, Moon, Play, ShieldCheck, Sun, X } from 'lucide-react';
+import { Box, ExternalLink, Loader2, Moon, Play, ShieldCheck, Sun, X } from 'lucide-react';
 import { useState } from 'react';
 import { MetricCard } from '../MetricCard';
 import { RequestForm } from '../RequestForm';
 import { ResultsPanel } from '../ResultsPanel';
 import { metricCards } from './constants';
-import { useSchemaCheck, useThemeController } from './hooks';
+import { useAppUiState, useSchemaCheck, useThemeController } from './hooks';
 import './styles.css';
 
 export function App() {
   const { error, form, health, loading, result, runCheck, updateField } = useSchemaCheck();
+  const { featureFlags } = useAppUiState();
   const { isLightTheme, theme, themeStyle, toggleTheme } = useThemeController();
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [privacyVisible, setPrivacyVisible] = useState(true);
@@ -43,12 +44,22 @@ export function App() {
           </div>
         </section>
       ) : null}
-      <section className="topbar">
-        <div>
-          <p className="eyebrow">Contract monitor</p>
-          <h1>API Schema Coverage</h1>
+      <nav className="app-nav" aria-label="Primary navigation">
+        <div className="brand-mark">
+          <span className="brand-icon" aria-hidden="true">
+            <Box size={18} />
+          </span>
+          <span>Contract Monitor</span>
         </div>
-        <div className="topbar-actions">
+        {featureFlags.showTopNavigation ? (
+          <div className="nav-tabs" aria-label="Sections">
+            <button className="active" type="button">Check</button>
+            <button type="button">History</button>
+            <button type="button">Environments</button>
+            <button type="button">Settings</button>
+          </div>
+        ) : null}
+        <div className="nav-actions">
           <button
             aria-checked={isLightTheme}
             aria-label="Switch light theme"
@@ -69,18 +80,31 @@ export function App() {
           </button>
           <button className="run-button" onClick={() => void runCheck()} disabled={loading} type="button">
             {loading ? <Loader2 className="spin" size={18} /> : <Play size={18} />}
-            Run GET Check
+            Run Check
           </button>
+        </div>
+      </nav>
+
+      <section className="hero">
+        <div>
+          <h1>API Schema Coverage</h1>
+          <p>Make sure your API responses match the contract.</p>
+        </div>
+        <div className="hero-status" aria-label="Environment status">
+          <span>ENV</span>
+          <strong>prod</strong>
+          <span>v1.0.0</span>
         </div>
       </section>
 
       <section className="metric-grid" aria-label="Check summary">
-        {metricCards.map(({ getMeter, getTone, getValue, icon: Icon, label }) => (
+        {metricCards.map(({ getMeter, getTone, getValue, icon: Icon, label, meterVariant }) => (
           <MetricCard
             icon={<Icon />}
             key={label}
             label={label}
             meter={getMeter?.(result)}
+            meterVariant={meterVariant}
             tone={getTone(result, health)}
             value={getValue(result)}
           />

@@ -1,7 +1,7 @@
 .input-panel {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .field { display: flex; flex-direction: column; gap: 8px; }
@@ -29,7 +29,7 @@ input, textarea {
     background-color 0.16s ease;
 }
 
-input { height: 44px; padding: 0 13px; }
+input { height: 42px; padding: 0 13px; }
 
 textarea {
   flex: 1;
@@ -84,10 +84,10 @@ input::placeholder { color: var(--color-text-placeholder); }
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 15px;
+  padding: 0;
   border-radius: 8px;
-  background: var(--color-surface-muted);
-  border: 1px solid var(--color-border);
+  background: var(--color-transparent);
+  border: 0;
 }
 
 .auth-title { display: flex; align-items: center; gap: 8px; }
@@ -96,7 +96,8 @@ input::placeholder { color: var(--color-text-placeholder); }
 .segmented button {
   min-height: 36px;
   color: var(--color-text-control-muted);
-  background: var(--color-surface-muted);
+  background: var(--color-surface-raised);
+  box-shadow: inset 0 0 0 1px var(--color-border-subtle);
   text-transform: capitalize;
 }
 
@@ -105,7 +106,14 @@ input::placeholder { color: var(--color-text-placeholder); }
   background: var(--color-surface-raised-hover);
 }
 
-.segmented button.active { color: var(--color-text-on-accent); background: var(--color-accent); border-color: var(--color-accent-border); }
+.segmented button.active {
+  color: var(--color-text-on-accent);
+  border-color: var(--color-transparent);
+  background:
+    linear-gradient(135deg, var(--color-accent), var(--color-cool-bright)) padding-box,
+    linear-gradient(135deg, var(--color-accent), var(--color-cool-bright)) border-box;
+  box-shadow: 0 12px 26px var(--color-action-shadow);
+}
 
 .format-button {
   min-height: 32px;

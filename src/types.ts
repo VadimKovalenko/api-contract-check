@@ -52,6 +52,7 @@ export interface MetricCardConfig {
   getValue: (result: CheckResult | null) => string | number;
   getTone: (result: CheckResult | null, health: HealthTone) => Tone;
   getMeter?: (result: CheckResult | null) => number;
+  meterVariant?: 'ring';
 }
 
 export interface ResultListConfig {

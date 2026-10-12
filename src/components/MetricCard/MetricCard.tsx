@@ -10,19 +10,27 @@ interface MetricCardProps {
   value: ReactNode;
   tone?: Tone;
   meter?: number;
+  meterVariant?: 'ring';
 }
 
-export function MetricCard({ icon, label, value, tone = defaultTone, meter }: MetricCardProps) {
+export function MetricCard({ icon, label, value, tone = defaultTone, meter, meterVariant }: MetricCardProps) {
   const meterStyle = useMeterStyle(meter);
+  const showRingMeter = meterVariant === 'ring';
+  const displayValue = showRingMeter && value !== '--' && meter !== undefined ? `${meter}%` : value;
 
   return (
     <article className={`metric-card ${tone}`}>
-      <div className="metric-icon">{icon}</div>
+      {showRingMeter ? (
+        <div className="metric-ring" style={meterStyle} aria-label={`${label}: ${value}`}>
+          <span>{displayValue}</span>
+        </div>
+      ) : (
+        <div className="metric-icon">{icon}</div>
+      )}
       <div>
         <span>{label}</span>
-        <strong>{value}</strong>
+        <strong>{displayValue}</strong>
       </div>
-      {meterStyle && <div className="mini-meter"><span style={meterStyle} /></div>}
     </article>
   );
 }

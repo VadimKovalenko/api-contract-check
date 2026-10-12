@@ -4,8 +4,9 @@ import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
-import { AlertTriangle, Server } from 'lucide-react';
+import { AlertTriangle, ChevronDown, FileJson, Server } from 'lucide-react';
 import { ListBlock } from '../ListBlock';
+import { withUserAccessibilityThereStyle } from '../withUserAccessibilityThereStyle';
 import { resultLists } from './constants';
 import { useCoverageStyle, useValidationErrorItems } from './hooks';
 import type { CheckResult } from '../../types';
@@ -74,6 +75,8 @@ const jsonPreviewExtensions = [
   EditorView.editable.of(false),
 ];
 
+const AccessibleListBlock = withUserAccessibilityThereStyle(ListBlock);
+
 export function ResultsPanel({ error, result }: ResultsPanelProps) {
   const validationErrorItems = useValidationErrorItems(result);
   const coverageStyle = useCoverageStyle(result);
@@ -111,7 +114,7 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
           </div>
 
           {resultLists.map(({ emptyText, infoText, key, title, tone }) => (
-            <ListBlock
+            <AccessibleListBlock
               emptyText={emptyText}
               infoText={infoText}
               items={result[key]}
@@ -120,7 +123,7 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
               tone={tone}
             />
           ))}
-          <ListBlock
+          <AccessibleListBlock
             title="Validation errors"
             items={validationErrorItems}
             emptyText="No schema validation errors."
@@ -128,7 +131,10 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
           />
 
           <div className="preview-block">
-            <h3>Response preview</h3>
+            <div className="preview-heading">
+              <h3><FileJson size={15} /> Response preview</h3>
+              <span>JSON <ChevronDown size={14} /></span>
+            </div>
             <CodeMirror
               aria-label="Response preview JSON"
               basicSetup={{ foldGutter: false, lineNumbers: false }}

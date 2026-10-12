@@ -116,13 +116,13 @@ export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProp
       <div className="panel-heading">
         <div>
           <p className="eyebrow">Request</p>
-          <h2>GET endpoint</h2>
+          <h2>Endpoint URL</h2>
         </div>
         <span className="method-pill">GET</span>
       </div>
 
       <label className="field">
-        <span>URL</span>
+        <span>Endpoint URL</span>
         <input
           value={form.url}
           onChange={(event) => onUpdateField('url', event.target.value)}
@@ -131,7 +131,7 @@ export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProp
       </label>
 
       <div className="auth-box">
-        <div className="auth-title"><KeyRound size={16} /> Auth</div>
+        <div className="auth-title"><KeyRound size={16} /> Authentication</div>
         <div className="segmented">
           {authTypes.map((type) => (
             <button
