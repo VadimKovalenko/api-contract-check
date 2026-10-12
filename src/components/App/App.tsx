@@ -80,7 +80,7 @@ export function App() {
           </button>
           <button className="run-button" onClick={() => void runCheck()} disabled={loading} type="button">
             {loading ? <Loader2 className="spin" size={18} /> : <Play size={18} />}
-            Run Check
+            <span>Run Check</span>
           </button>
         </div>
       </nav>

@@ -105,8 +105,8 @@
     var(--color-warning) 235deg,
     var(--color-danger-hot) 360deg
   );
-  -webkit-mask: conic-gradient(#000000 0deg var(--meter-degrees), transparent var(--meter-degrees) 360deg);
-  mask: conic-gradient(#000000 0deg var(--meter-degrees), transparent var(--meter-degrees) 360deg);
+  -webkit-mask: conic-gradient(var(--color-mask-solid) 0deg var(--meter-degrees), transparent var(--meter-degrees) 360deg);
+  mask: conic-gradient(var(--color-mask-solid) 0deg var(--meter-degrees), transparent var(--meter-degrees) 360deg);
 }
 
 .metric-ring span {

@@ -62,7 +62,8 @@
 
 .preview-heading,
 .preview-heading h3,
-.preview-heading span {
+.preview-actions,
+.preview-action-button {
   display: flex;
   align-items: center;
 }
@@ -76,11 +77,44 @@
   gap: 8px;
 }
 
-.preview-heading span {
+.preview-actions {
+  gap: 8px;
+}
+
+.preview-action-button {
+  min-height: 28px;
   gap: 5px;
+  padding: 0 9px;
   color: var(--color-text-muted);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 8px;
   font-size: 0.76rem;
   font-weight: 800;
+  line-height: 1;
+}
+
+.preview-action-button:hover:not(:disabled) {
+  color: var(--color-text-control-hover);
+  background: var(--color-surface-raised-hover);
+  border-color: var(--color-border-strong);
+}
+
+.preview-action-button:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 3px var(--color-accent-focus-ring);
+}
+
+.preview-action-button svg {
+  flex: 0 0 auto;
+}
+
+.preview-action-button .collapsed {
+  transform: rotate(-90deg);
+}
+
+.preview-action-button:disabled {
+  opacity: 0.58;
 }
 
 .json-preview-editor .cm-json-key {

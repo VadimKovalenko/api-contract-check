@@ -92,6 +92,7 @@ h3 { font-size: 0.92rem; color: var(--color-text-heading); }
   background: var(--color-surface-raised);
   font-size: 0.78rem;
   font-weight: 800;
+  line-height: 1;
 }
 
 .method-pill {
@@ -111,6 +112,10 @@ h3 { font-size: 0.92rem; color: var(--color-text-heading); }
   box-shadow: 0 0 18px var(--color-success-bg);
 }
 
+.user-accessibility-theme-style.state-pill.good {
+  color: var(--color-badge-accessible-text);
+}
+
 .state-pill.bad {
   color: var(--color-danger-pill-text);
   border-color: var(--color-transparent);
@@ -118,6 +123,10 @@ h3 { font-size: 0.92rem; color: var(--color-text-heading); }
     linear-gradient(var(--color-danger-bg), var(--color-danger-bg)) padding-box,
     linear-gradient(135deg, var(--color-danger-hot), var(--color-danger-deep)) border-box;
   box-shadow: 0 0 18px var(--color-danger-bg);
+}
+
+.user-accessibility-theme-style.state-pill.bad {
+  color: var(--color-badge-accessible-text);
 }
 
 @media (max-width: 980px) {

@@ -382,15 +382,84 @@
   align-items: center;
   gap: 10px;
   padding: 0 18px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   color: var(--color-text-on-accent);
   font-weight: 800;
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-warm));
   box-shadow: 0 16px 42px var(--color-action-shadow);
 }
 
+.run-button::before,
+.run-button::after {
+  content: "";
+  position: absolute;
+  inset: auto auto -70% 50%;
+  z-index: 0;
+  width: 170%;
+  aspect-ratio: 1;
+  border-radius: 42% 48% 45% 52%;
+  pointer-events: none;
+  transform: translateX(-50%) scale(0.22) rotate(0deg);
+  transition:
+    transform 0.58s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease;
+}
+
+.run-button::before {
+  opacity: 0.82;
+  background:
+    radial-gradient(circle at 34% 28%, var(--color-accent-warm) 0 8%, var(--color-transparent) 20%),
+    radial-gradient(circle at 64% 34%, var(--color-accent) 0 9%, var(--color-transparent) 21%),
+    linear-gradient(135deg, var(--color-accent-warm), var(--color-danger-hot) 52%, var(--color-accent));
+}
+
+.run-button::before,
+.run-button::after {
+  mix-blend-mode: soft-light;
+}
+
+.run-button::after {
+  bottom: -82%;
+  opacity: 0.42;
+  width: 150%;
+  border-radius: 48% 43% 51% 44%;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-cool-bright), var(--color-accent-warm));
+  transition-duration: 0.72s;
+}
+
+.run-button svg,
+.run-button .spin,
+.run-button span {
+  position: relative;
+  z-index: 1;
+}
+
 .run-button:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 20px 52px var(--color-action-shadow-hover);
+}
+
+.run-button:hover:not(:disabled)::before {
+  opacity: 0.95;
+  transform: translateX(-50%) scale(1.08) rotate(185deg);
+  animation: liquid-fire-swirl 2.4s linear infinite;
+}
+
+.run-button:hover:not(:disabled)::after {
+  opacity: 0.64;
+  transform: translateX(-50%) scale(1.02) rotate(-140deg);
+  animation: liquid-fire-swirl 3.1s linear infinite reverse;
+}
+
+.run-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.985);
+}
+
+.run-button:disabled::before,
+.run-button:disabled::after {
+  opacity: 0;
 }
 
 .metric-grid {
@@ -411,14 +480,31 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+@keyframes liquid-fire-swirl {
+  to {
+    border-radius: 48% 43% 52% 45%;
+    transform: translateX(-50%) scale(1.08) rotate(545deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .run-button::before,
+  .run-button::after,
+  .run-button:hover:not(:disabled)::before,
+  .run-button:hover:not(:disabled)::after {
+    animation: none;
+    transition-duration: 0.01ms;
+  }
+}
+
 
 @media (max-width: 980px) {
   .app-nav {
-    grid-template-columns: 1fr;
+    flex-wrap: wrap;
   }
   .nav-tabs,
   .nav-actions {
-    justify-self: stretch;
+    width: 100%;
   }
   .nav-tabs {
     overflow-x: auto;

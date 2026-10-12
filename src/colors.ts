@@ -99,6 +99,7 @@ export const colors = {
   heroScrim: 'rgb(4 13 24 / 0.28)',
   pageVeil: 'rgb(2 8 16 / 0.08)',
   badgeAccessibleText: '#071b17',
+  maskSolid: '#000000',
   shadowLarge: '0 22px 70px rgb(0 0 0 / 0.26)',
   shadowCardHover: '0 24px 74px rgb(0 0 0 / 0.32)',
   transparent: 'transparent',
@@ -181,6 +182,7 @@ const lightColors: ColorPalette = {
   heroScrim: 'rgb(255 255 255 / 0.24)',
   pageVeil: 'rgb(255 255 255 / 0.02)',
   badgeAccessibleText: '#071b17',
+  maskSolid: '#000000',
   shadowLarge: '0 22px 70px rgb(22 33 42 / 0.12)',
   shadowCardHover: '0 24px 74px rgb(22 33 42 / 0.16)',
 };
@@ -218,6 +220,7 @@ function makeColorVariables(palette: ColorPalette): StyleVars {
     '--color-nav-surface-active': palette.navSurfaceActive,
     '--color-hero-scrim': palette.heroScrim,
     '--color-badge-accessible-text': palette.badgeAccessibleText,
+    '--color-mask-solid': palette.maskSolid,
     '--color-border': palette.border,
     '--color-border-strong': palette.borderStrong,
     '--color-border-subtle': palette.borderSubtle,

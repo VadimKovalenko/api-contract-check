@@ -1,10 +1,11 @@
 import CodeMirror from '@uiw/react-codemirror';
+import { useState } from 'react';
 import { json } from '@codemirror/lang-json';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
-import { AlertTriangle, ChevronDown, FileJson, Server } from 'lucide-react';
+import { AlertTriangle, Check, ChevronDown, Copy, FileJson, Server } from 'lucide-react';
 import { ListBlock } from '../ListBlock';
 import { withUserAccessibilityThereStyle } from '../withUserAccessibilityThereStyle';
 import { resultLists } from './constants';
@@ -77,10 +78,37 @@ const jsonPreviewExtensions = [
 
 const AccessibleListBlock = withUserAccessibilityThereStyle(ListBlock);
 
+interface SchemaStatusPillProps {
+  className?: string;
+  valid: boolean;
+}
+
+function SchemaStatusPill({ className = '', valid }: SchemaStatusPillProps) {
+  return (
+    <span className={`state-pill ${valid ? 'good' : 'bad'} ${className}`}>
+      {valid ? 'Schema pass' : 'Schema fail'}
+    </span>
+  );
+}
+
+const AccessibleSchemaStatusPill = withUserAccessibilityThereStyle(SchemaStatusPill);
+
 export function ResultsPanel({ error, result }: ResultsPanelProps) {
   const validationErrorItems = useValidationErrorItems(result);
   const coverageStyle = useCoverageStyle(result);
   const responsePreview = result ? JSON.stringify(result.responsePreview, null, 2) : '';
+  const [copied, setCopied] = useState(false);
+  const [jsonCollapsed, setJsonCollapsed] = useState(false);
+
+  async function copyResponsePreview() {
+    if (!responsePreview) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(responsePreview);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1400);
+  }
 
   return (
     <section className="panel results-panel">
@@ -89,7 +117,7 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
           <p className="eyebrow">Results</p>
           <h2>Contract evidence</h2>
         </div>
-        {result && <span className={`state-pill ${result.valid ? 'good' : 'bad'}`}>{result.valid ? 'Schema pass' : 'Schema fail'}</span>}
+        {result && <AccessibleSchemaStatusPill valid={result.valid} />}
       </div>
 
       {error && (
@@ -133,16 +161,38 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
           <div className="preview-block">
             <div className="preview-heading">
               <h3><FileJson size={15} /> Response preview</h3>
-              <span>JSON <ChevronDown size={14} /></span>
+              <div className="preview-actions">
+                <button
+                  aria-label="Copy response JSON"
+                  className="preview-action-button"
+                  disabled={!responsePreview}
+                  onClick={() => void copyResponsePreview()}
+                  type="button"
+                >
+                  {copied ? <Check size={14} /> : <Copy size={14} />}
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+                <button
+                  aria-expanded={!jsonCollapsed}
+                  aria-label={jsonCollapsed ? 'Expand response JSON' : 'Collapse response JSON'}
+                  className="preview-action-button"
+                  onClick={() => setJsonCollapsed((current) => !current)}
+                  type="button"
+                >
+                  JSON <ChevronDown className={jsonCollapsed ? 'collapsed' : ''} size={14} />
+                </button>
+              </div>
             </div>
-            <CodeMirror
-              aria-label="Response preview JSON"
-              basicSetup={{ foldGutter: false, lineNumbers: false }}
-              className="json-preview-editor"
-              extensions={jsonPreviewExtensions}
-              theme="none"
-              value={responsePreview}
-            />
+            {!jsonCollapsed ? (
+              <CodeMirror
+                aria-label="Response preview JSON"
+                basicSetup={{ foldGutter: false, lineNumbers: false }}
+                className="json-preview-editor"
+                extensions={jsonPreviewExtensions}
+                theme="none"
+                value={responsePreview}
+              />
+            ) : null}
           </div>
         </div>
       )}
