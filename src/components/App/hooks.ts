@@ -97,7 +97,7 @@ export function useAppUiState() {
 }
 
 export function useThemeController() {
-  const [theme, setTheme] = useState<ThemeMode>('dark');
+  const [theme, setTheme] = useState<ThemeMode>('light');
   const isLightTheme = theme === 'light';
 
   useEffect(() => {
