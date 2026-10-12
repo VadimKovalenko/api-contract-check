@@ -142,8 +142,7 @@
 
 .user-accessibility-theme-style .chip-list.optional span,
 .user-accessibility-theme-style .chip-list.unlisted span,
-.user-accessibility-theme-style .chip-list.present span,
-.user-accessibility-theme-style .chip-list.missing span {
+.user-accessibility-theme-style .chip-list.present span {
   color: var(--color-badge-accessible-text);
 }
 

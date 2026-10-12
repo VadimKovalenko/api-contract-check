@@ -104,16 +104,16 @@ h3 { font-size: 0.92rem; color: var(--color-text-heading); }
 }
 
 .state-pill.good {
-  color: var(--color-success-soft);
+  color: var(--color-success-text);
   border-color: var(--color-transparent);
   background:
-    linear-gradient(var(--color-success-bg), var(--color-success-bg)) padding-box,
-    linear-gradient(135deg, var(--color-success), var(--color-accent)) border-box;
-  box-shadow: 0 0 18px var(--color-success-bg);
+    linear-gradient(var(--color-surface-raised), var(--color-surface-raised)) padding-box,
+    linear-gradient(135deg, var(--color-success-border), var(--color-border-subtle)) border-box;
+  box-shadow: none;
 }
 
 .user-accessibility-theme-style.state-pill.good {
-  color: var(--color-badge-accessible-text);
+  color: var(--color-success-border-strong);
 }
 
 .state-pill.bad {
