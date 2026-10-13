@@ -3,9 +3,11 @@ import type { CheckFormState, MetricCardConfig } from '../../types';
 
 export const initialAppState = {
   featureFlags: {
-    showTopNavigation: false,
+    showTopNavigation: true,
   },
 };
+
+export const savedYamlStorageKey = 'api-contract-check:saved-yamls';
 
 export const sampleSpec = `openapi: 3.0.0
 paths:

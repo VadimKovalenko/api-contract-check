@@ -5,7 +5,7 @@ import { yaml } from '@codemirror/lang-yaml';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorView } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
-import { KeyRound, Sparkles } from 'lucide-react';
+import { Check, Copy, KeyRound, Save, Sparkles } from 'lucide-react';
 import { formatYamlSpec, useAuthTypes } from './hooks';
 import type { CheckFormState, RunCheck, UpdateFormField } from '../../types';
 import './styles.css';
@@ -13,6 +13,7 @@ import './styles.css';
 interface RequestFormProps {
   form: CheckFormState;
   onRunCheck: RunCheck;
+  onSaveCurrentYaml: () => void;
   onUpdateField: UpdateFormField;
 }
 
@@ -73,9 +74,10 @@ const yamlEditorTheme = EditorView.theme({
 
 const yamlEditorExtensions = [yaml(), syntaxHighlighting(yamlHighlightStyle), yamlEditorTheme, EditorView.lineWrapping];
 
-export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProps) {
+export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField }: RequestFormProps) {
   const authTypes = useAuthTypes();
   const yamlEditorRef = useRef<ReactCodeMirrorRef | null>(null);
+  const [copied, setCopied] = useState(false);
   const [formatError, setFormatError] = useState('');
 
   function updateYamlSpec(value: string) {
@@ -105,6 +107,16 @@ export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProp
     } catch (error) {
       setFormatError(getErrorMessage(error));
     }
+  }
+
+  async function copyYamlSpec() {
+    if (!form.yamlSpec) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(form.yamlSpec);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1400);
   }
 
   function handleSubmit(event: FormEvent) {
@@ -161,10 +173,20 @@ export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProp
       <div className="field grow-field">
         <div className="field-header">
           <span>OpenAPI subset YAML</span>
-          <button className="format-button" onClick={handleFormatYaml} type="button">
-            <Sparkles size={15} />
-            Auto Format
-          </button>
+          <div className="yaml-actions">
+            <button className="format-button" onClick={() => void copyYamlSpec()} type="button">
+              {copied ? <Check size={15} /> : <Copy size={15} />}
+              {copied ? 'Copied' : 'Copy'}
+            </button>
+            <button className="format-button" onClick={onSaveCurrentYaml} type="button">
+              <Save size={15} />
+              Save
+            </button>
+            <button className="format-button" onClick={handleFormatYaml} type="button">
+              <Sparkles size={15} />
+              Auto Format
+            </button>
+          </div>
         </div>
         <CodeMirror
           ref={yamlEditorRef}

@@ -1,16 +1,31 @@
-import { Box, ExternalLink, Loader2, Moon, Play, ShieldCheck, Sun, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { Box, ExternalLink, Loader2, Moon, Play, Save, ShieldCheck, Sun, X } from 'lucide-react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { MetricCard } from '../MetricCard';
+import { MyYamls } from '../MyYamls';
 import { RequestForm } from '../RequestForm';
 import { ResultsPanel } from '../ResultsPanel';
 import { vantaFogColors } from '../../colors';
 import { metricCards } from './constants';
-import { useAppUiState, useSchemaCheck, useThemeController, useWorkspaceResize } from './hooks';
+import {
+  useAppUiState,
+  useSavedYamlLibrary,
+  useSchemaCheck,
+  useThemeController,
+  useWorkspaceResize,
+} from './hooks';
+import type { SavedYaml, StyleVars } from '../../types';
 import './styles.css';
 
+const navItems = [
+  { end: true, label: 'Check', to: '/' },
+  { label: 'My Yamls', to: '/yamls' },
+] as const;
+
 export function App() {
-  const { error, form, health, loading, result, runCheck, updateField } = useSchemaCheck();
+  const { applySavedYaml, error, form, health, loading, result, runCheck, updateField } = useSchemaCheck();
   const { featureFlags } = useAppUiState();
+  const { createSavedYaml, removeSavedYaml, savedYamls } = useSavedYamlLibrary();
   const { isLightTheme, theme, themeStyle, toggleTheme } = useThemeController();
   const {
     handleResizeKeyDown,
@@ -23,6 +38,18 @@ export function App() {
   const fogRef = useRef<HTMLDivElement | null>(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [privacyVisible, setPrivacyVisible] = useState(true);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [saveTitle, setSaveTitle] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const activeNavIndex = Math.max(
+    0,
+    navItems.findIndex((item) => (item.to === '/' ? location.pathname === '/' : location.pathname.startsWith(item.to))),
+  );
+  const navTabsStyle: StyleVars = {
+    '--nav-count': String(navItems.length),
+    '--nav-index': String(activeNavIndex),
+  };
 
   useEffect(() => {
     const shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -70,6 +97,23 @@ export function App() {
     setPrivacyVisible(false);
   }
 
+  function saveCurrentYaml(event: FormEvent) {
+    event.preventDefault();
+    createSavedYaml({
+      title: saveTitle,
+      url: form.url,
+      yamlSpec: form.yamlSpec,
+    });
+    setSaveTitle('');
+    setSaveDialogOpen(false);
+    navigate('/yamls');
+  }
+
+  function useSavedYaml(savedYaml: SavedYaml) {
+    applySavedYaml(savedYaml);
+    navigate('/');
+  }
+
   return (
     <main className="app-shell" data-theme={theme} style={themeStyle}>
       <div className="background-fog" ref={fogRef} aria-hidden="true" />
@@ -98,18 +142,24 @@ export function App() {
         </section>
       ) : null}
       <nav className="app-nav" aria-label="Primary navigation">
-        <div className="brand-mark">
+        <NavLink className="brand-mark" to="/">
           <span className="brand-icon" aria-hidden="true">
             <Box size={18} />
           </span>
           <span>Contract Monitor</span>
-        </div>
+        </NavLink>
         {featureFlags.showTopNavigation ? (
-          <div className="nav-tabs" aria-label="Sections">
-            <button className="active" type="button">Check</button>
-            <button type="button">History</button>
-            <button type="button">Environments</button>
-            <button type="button">Settings</button>
+          <div className="nav-tabs" aria-label="Sections" style={navTabsStyle}>
+            {navItems.map((item) => (
+              <NavLink
+                className={({ isActive }) => (isActive ? 'active' : '')}
+                end={item.end}
+                key={item.to}
+                to={item.to}
+              >
+                {item.label}
+              </NavLink>
+            ))}
           </div>
         ) : null}
         <div className="nav-actions">
@@ -138,52 +188,77 @@ export function App() {
         </div>
       </nav>
 
-      <section className="hero">
-        <div>
-          <h1>API Schema Coverage</h1>
-          <p>Make sure your API responses match the contract.</p>
-        </div>
-        <div className="hero-status" aria-label="Environment status">
-          <span>ENV</span>
-          <strong>prod</strong>
-          <span>v1.0.0</span>
-        </div>
-      </section>
+      <Routes>
+        <Route
+          path="/"
+          element={(
+            <>
+              <section className="hero">
+                <div>
+                  <h1>API Schema Coverage</h1>
+                  <p>Make sure your API responses match the contract.</p>
+                </div>
+                <div className="hero-status" aria-label="Environment status">
+                  <span>ENV</span>
+                  <strong>prod</strong>
+                  <span>v1.0.0</span>
+                </div>
+              </section>
 
-      <section className="metric-grid" aria-label="Check summary">
-        {metricCards.map(({ getMeter, getTone, getValue, icon: Icon, label, meterVariant }) => (
-          <MetricCard
-            icon={<Icon />}
-            key={label}
-            label={label}
-            meter={getMeter?.(result)}
-            meterVariant={meterVariant}
-            tone={getTone(result, health)}
-            value={getValue(result)}
-          />
-        ))}
-      </section>
+              <section className="metric-grid" aria-label="Check summary">
+                {metricCards.map(({ getMeter, getTone, getValue, icon: Icon, label, meterVariant }) => (
+                  <MetricCard
+                    icon={<Icon />}
+                    key={label}
+                    label={label}
+                    meter={getMeter?.(result)}
+                    meterVariant={meterVariant}
+                    tone={getTone(result, health)}
+                    value={getValue(result)}
+                  />
+                ))}
+              </section>
 
-      <section
-        className={`workspace-grid ${resizing ? 'is-resizing' : ''}`}
-        ref={workspaceRef}
-        style={workspaceStyle}
-      >
-        <RequestForm form={form} onRunCheck={runCheck} onUpdateField={updateField} />
-        <button
-          aria-label="Resize request and results panels"
-          aria-orientation="vertical"
-          aria-valuemax={68}
-          aria-valuemin={32}
-          aria-valuenow={Math.round(requestPanelPercent)}
-          className="workspace-resize-handle"
-          onKeyDown={handleResizeKeyDown}
-          onPointerDown={startResize}
-          role="separator"
-          type="button"
+              <section
+                className={`workspace-grid ${resizing ? 'is-resizing' : ''}`}
+                ref={workspaceRef}
+                style={workspaceStyle}
+              >
+                <RequestForm
+                  form={form}
+                  onRunCheck={runCheck}
+                  onSaveCurrentYaml={() => setSaveDialogOpen(true)}
+                  onUpdateField={updateField}
+                />
+                <button
+                  aria-label="Resize request and results panels"
+                  aria-orientation="vertical"
+                  aria-valuemax={68}
+                  aria-valuemin={32}
+                  aria-valuenow={Math.round(requestPanelPercent)}
+                  className="workspace-resize-handle"
+                  onKeyDown={handleResizeKeyDown}
+                  onPointerDown={startResize}
+                  role="separator"
+                  type="button"
+                />
+                <ResultsPanel error={error} result={result} />
+              </section>
+            </>
+          )}
         />
-        <ResultsPanel error={error} result={result} />
-      </section>
+        <Route
+          path="/yamls"
+          element={(
+            <MyYamls
+              onCreateYaml={createSavedYaml}
+              onRemoveYaml={removeSavedYaml}
+              onUseYaml={useSavedYaml}
+              savedYamls={savedYamls}
+            />
+          )}
+        />
+      </Routes>
 
       {privacyOpen ? (
         <div className="privacy-modal-backdrop" role="presentation">
@@ -233,6 +308,54 @@ export function App() {
               </button>
             </div>
           </section>
+        </div>
+      ) : null}
+      {saveDialogOpen ? (
+        <div className="privacy-modal-backdrop" role="presentation">
+          <form
+            aria-labelledby="save-yaml-title"
+            aria-modal="true"
+            className="privacy-modal save-yaml-modal"
+            onSubmit={saveCurrentYaml}
+            role="dialog"
+          >
+            <div className="privacy-modal-heading">
+              <div>
+                <p className="eyebrow">Save YAML</p>
+                <h2 id="save-yaml-title">Add this request to My Yamls</h2>
+              </div>
+              <button
+                aria-label="Cancel save"
+                className="privacy-icon-button"
+                onClick={() => setSaveDialogOpen(false)}
+                type="button"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <label className="field">
+              <span>Name</span>
+              <input
+                autoFocus
+                onChange={(event) => setSaveTitle(event.target.value)}
+                placeholder="User profile schema"
+                value={saveTitle}
+              />
+            </label>
+            <div className="save-yaml-preview">
+              <span>Request</span>
+              <code>{form.url}</code>
+            </div>
+            <div className="privacy-modal-actions">
+              <button className="privacy-link-button" onClick={() => setSaveDialogOpen(false)} type="button">
+                Cancel
+              </button>
+              <button className="run-button" disabled={!form.url.trim() || !form.yamlSpec.trim()} type="submit">
+                <Save size={17} />
+                <span>Save</span>
+              </button>
+            </div>
+          </form>
         </div>
       ) : null}
     </main>

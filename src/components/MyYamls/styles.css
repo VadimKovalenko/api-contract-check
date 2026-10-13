@@ -1,0 +1,244 @@
+.yamls-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.yamls-heading,
+.yaml-card-heading,
+.yaml-card-actions,
+.yaml-create-actions,
+.confirm-heading,
+.confirm-actions,
+.yamls-count,
+.confirm-danger-button {
+  display: flex;
+  align-items: center;
+}
+
+.yamls-heading {
+  min-height: 112px;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 8px 6px 0;
+}
+
+.yamls-count {
+  min-height: 34px;
+  padding: 0 12px;
+  color: var(--color-text-muted);
+  background: var(--color-hero-scrim);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.yaml-create-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.yaml-create-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.42fr) 1fr;
+  gap: 12px;
+}
+
+.yaml-create-textarea {
+  min-height: 230px;
+}
+
+.yaml-create-actions {
+  justify-content: flex-end;
+}
+
+.yamls-empty {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.yamls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 16px;
+}
+
+.yaml-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 8px;
+  box-shadow: var(--shadow-large);
+}
+
+.yaml-card-heading {
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.yaml-card-heading h2 {
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.yaml-card-heading time {
+  display: block;
+  margin-top: 5px;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.yaml-card-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.preview-action-button.danger {
+  color: var(--color-danger);
+  border-color: var(--color-danger-border);
+}
+
+.preview-action-button.danger:hover {
+  color: var(--color-danger-text-soft);
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border-strong);
+}
+
+.yaml-card-request {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.yaml-card-request span {
+  color: var(--color-text-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.yaml-card-request code {
+  display: block;
+  overflow-wrap: anywhere;
+  padding: 10px;
+  color: var(--color-text-preview);
+  background: var(--color-preview-bg);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.preview-action-button .collapsed {
+  transform: rotate(-90deg);
+}
+
+.yaml-card-preview .cm-yaml-key {
+  color: var(--color-yaml-key) !important;
+  font-weight: 700;
+}
+
+.yaml-card-preview .cm-yaml-value {
+  color: var(--color-yaml-value) !important;
+}
+
+.yaml-card-preview .cm-yaml-literal {
+  color: var(--color-yaml-literal) !important;
+}
+
+.yaml-card-preview .cm-yaml-comment {
+  color: var(--color-yaml-comment) !important;
+  font-style: italic;
+}
+
+.yaml-card-preview .cm-yaml-punctuation {
+  color: var(--color-yaml-punctuation) !important;
+}
+
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--color-privacy-modal-backdrop);
+  backdrop-filter: blur(10px);
+}
+
+.confirm-dialog {
+  width: min(520px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-large);
+}
+
+.confirm-heading {
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.confirm-dialog p {
+  color: var(--color-text-soft);
+  line-height: 1.55;
+}
+
+.confirm-actions {
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confirm-danger-button {
+  min-height: 36px;
+  gap: 7px;
+  padding: 0 13px;
+  color: var(--color-danger-text-strong);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border-strong);
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.confirm-danger-button:hover {
+  color: var(--color-text-control-hover);
+  background: var(--color-danger-bg-strong);
+}
+
+@media (max-width: 760px) {
+  .yamls-heading,
+  .yaml-card-heading {
+    flex-direction: column;
+  }
+
+  .yamls-count,
+  .yaml-card-actions,
+  .yaml-card-actions .preview-action-button {
+    width: 100%;
+  }
+
+  .yaml-card-actions .preview-action-button {
+    justify-content: center;
+  }
+
+  .yaml-create-grid {
+    grid-template-columns: 1fr;
+  }
+}

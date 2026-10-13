@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter } from 'react-router-dom';
 import { applyColorTheme } from './colors';
 import { App } from './components/App';
 import './styles.css';
@@ -15,6 +16,8 @@ if (!root) {
 
 createRoot(root).render(
   <QueryClientProvider client={queryClient}>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </QueryClientProvider>,
 );

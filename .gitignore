@@ -2,6 +2,7 @@ node_modules/
 dist/
 dist-server/
 coverage/
+yaml-samples/
 
 .env
 .env.*

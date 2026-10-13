@@ -1,9 +1,9 @@
 import type { FormEvent, KeyboardEvent, PointerEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { initialAppState, initialState } from './constants';
+import { initialAppState, initialState, savedYamlStorageKey } from './constants';
 import { applyColorTheme, getColorVariables, type ThemeMode } from '../../colors';
-import type { AuthType, CheckFormState, CheckResult, HealthTone, StyleVars } from '../../types';
+import type { AuthType, CheckFormState, CheckResult, HealthTone, SavedYaml, StyleVars } from '../../types';
 
 type AuthPayload =
   | { type: 'none' }
@@ -67,6 +67,20 @@ export function useSchemaCheck() {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
+  function applySavedYaml(savedYaml: Pick<SavedYaml, 'url' | 'yamlSpec'>) {
+    setForm((current) => ({
+      ...current,
+      authType: 'none',
+      token: '',
+      cookie: '',
+      headerValue: '',
+      url: savedYaml.url,
+      yamlSpec: savedYaml.yamlSpec,
+    }));
+    setResult(null);
+    checkMutation.reset();
+  }
+
   async function runCheck(event?: FormEvent) {
     event?.preventDefault();
 
@@ -84,11 +98,83 @@ export function useSchemaCheck() {
   const error = checkMutation.isError ? getErrorMessage(checkMutation.error) : '';
   const loading = checkMutation.isPending;
 
-  return { error, form, health, loading, result, runCheck, updateField };
+  return { applySavedYaml, error, form, health, loading, result, runCheck, updateField };
 }
 
 export type SchemaCheckState = ReturnType<typeof useSchemaCheck>;
 export type { AuthType };
+
+function parseSavedYamls(value: string | null): SavedYaml[] {
+  if (!value) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed.filter((item): item is SavedYaml => (
+      typeof item === 'object'
+      && item !== null
+      && 'id' in item
+      && 'title' in item
+      && 'url' in item
+      && 'yamlSpec' in item
+      && 'createdAt' in item
+      && typeof item.id === 'string'
+      && typeof item.title === 'string'
+      && typeof item.url === 'string'
+      && typeof item.yamlSpec === 'string'
+      && typeof item.createdAt === 'string'
+    ));
+  } catch {
+    return [];
+  }
+}
+
+function createSavedYamlId() {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+export function useSavedYamlLibrary() {
+  const [savedYamls, setSavedYamls] = useState<SavedYaml[]>(() => (
+    parseSavedYamls(window.localStorage.getItem(savedYamlStorageKey))
+  ));
+
+  useEffect(() => {
+    window.localStorage.setItem(savedYamlStorageKey, JSON.stringify(savedYamls));
+  }, [savedYamls]);
+
+  function createSavedYaml({
+    title,
+    url,
+    yamlSpec,
+  }: Pick<SavedYaml, 'title' | 'url' | 'yamlSpec'>) {
+    const savedYaml: SavedYaml = {
+      id: createSavedYamlId(),
+      title: title.trim() || 'Untitled YAML',
+      url: url.trim(),
+      yamlSpec,
+      createdAt: new Date().toISOString(),
+    };
+
+    setSavedYamls((current) => [savedYaml, ...current]);
+    return savedYaml;
+  }
+
+  function removeSavedYaml(id: string) {
+    setSavedYamls((current) => current.filter((savedYaml) => savedYaml.id !== id));
+  }
+
+  return { createSavedYaml, removeSavedYaml, savedYamls };
+}
 
 export function useAppUiState() {
   const [appState] = useState(initialAppState);

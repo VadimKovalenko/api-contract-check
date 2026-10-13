@@ -15,6 +15,14 @@ export interface CheckFormState {
   yamlSpec: string;
 }
 
+export interface SavedYaml {
+  id: string;
+  title: string;
+  url: string;
+  yamlSpec: string;
+  createdAt: string;
+}
+
 export interface ValidationErrorItem {
   path: string;
   message?: string;

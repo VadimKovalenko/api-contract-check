@@ -13,6 +13,14 @@
   gap: 12px;
 }
 
+.yaml-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .field span, .auth-title { color: var(--color-text-soft); font-size: 0.82rem; font-weight: 760; }
 .grow-field { flex: 1; min-height: 360px; }
 
@@ -146,6 +154,7 @@ input::placeholder { color: var(--color-text-placeholder); }
 
 @media (max-width: 620px) {
   .field-header { align-items: flex-start; flex-direction: column; }
+  .yaml-actions { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); }
   .format-button { width: 100%; justify-content: center; }
   .segmented { grid-template-columns: repeat(2, 1fr); }
   .two-col { grid-template-columns: 1fr; }
