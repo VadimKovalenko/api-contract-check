@@ -5,13 +5,21 @@ import { RequestForm } from '../RequestForm';
 import { ResultsPanel } from '../ResultsPanel';
 import { vantaFogColors } from '../../colors';
 import { metricCards } from './constants';
-import { useAppUiState, useSchemaCheck, useThemeController } from './hooks';
+import { useAppUiState, useSchemaCheck, useThemeController, useWorkspaceResize } from './hooks';
 import './styles.css';
 
 export function App() {
   const { error, form, health, loading, result, runCheck, updateField } = useSchemaCheck();
   const { featureFlags } = useAppUiState();
   const { isLightTheme, theme, themeStyle, toggleTheme } = useThemeController();
+  const {
+    handleResizeKeyDown,
+    requestPanelPercent,
+    resizing,
+    startResize,
+    workspaceRef,
+    workspaceStyle,
+  } = useWorkspaceResize();
   const fogRef = useRef<HTMLDivElement | null>(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [privacyVisible, setPrivacyVisible] = useState(true);
@@ -156,8 +164,24 @@ export function App() {
         ))}
       </section>
 
-      <section className="workspace-grid">
+      <section
+        className={`workspace-grid ${resizing ? 'is-resizing' : ''}`}
+        ref={workspaceRef}
+        style={workspaceStyle}
+      >
         <RequestForm form={form} onRunCheck={runCheck} onUpdateField={updateField} />
+        <button
+          aria-label="Resize request and results panels"
+          aria-orientation="vertical"
+          aria-valuemax={68}
+          aria-valuemin={32}
+          aria-valuenow={Math.round(requestPanelPercent)}
+          className="workspace-resize-handle"
+          onKeyDown={handleResizeKeyDown}
+          onPointerDown={startResize}
+          role="separator"
+          type="button"
+        />
         <ResultsPanel error={error} result={result} />
       </section>
 

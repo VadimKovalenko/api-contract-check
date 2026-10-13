@@ -71,7 +71,7 @@ const yamlEditorTheme = EditorView.theme({
   },
 });
 
-const yamlEditorExtensions = [yaml(), syntaxHighlighting(yamlHighlightStyle), yamlEditorTheme];
+const yamlEditorExtensions = [yaml(), syntaxHighlighting(yamlHighlightStyle), yamlEditorTheme, EditorView.lineWrapping];
 
 export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProps) {
   const authTypes = useAuthTypes();
@@ -171,7 +171,12 @@ export function RequestForm({ form, onRunCheck, onUpdateField }: RequestFormProp
           className="yaml-editor"
           value={form.yamlSpec}
           extensions={yamlEditorExtensions}
-          basicSetup={{ foldGutter: false }}
+          basicSetup={{
+            foldGutter: false,
+            highlightActiveLine: false,
+            highlightActiveLineGutter: false,
+            lineNumbers: false,
+          }}
           height="100%"
           indentWithTab
           onChange={updateYamlSpec}

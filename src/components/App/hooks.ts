@@ -1,9 +1,9 @@
-import type { FormEvent } from 'react';
+import type { FormEvent, KeyboardEvent, PointerEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { initialAppState, initialState } from './constants';
 import { applyColorTheme, getColorVariables, type ThemeMode } from '../../colors';
-import type { AuthType, CheckFormState, CheckResult, HealthTone } from '../../types';
+import type { AuthType, CheckFormState, CheckResult, HealthTone, StyleVars } from '../../types';
 
 type AuthPayload =
   | { type: 'none' }
@@ -112,4 +112,87 @@ export function useThemeController() {
   }
 
   return { isLightTheme, theme, themeStyle, toggleTheme };
+}
+
+const MIN_WORKSPACE_PANEL_PERCENT = 32;
+const MAX_WORKSPACE_PANEL_PERCENT = 68;
+const WORKSPACE_KEYBOARD_STEP = 4;
+
+function clampWorkspacePercent(value: number) {
+  return Math.min(Math.max(value, MIN_WORKSPACE_PANEL_PERCENT), MAX_WORKSPACE_PANEL_PERCENT);
+}
+
+export function useWorkspaceResize() {
+  const workspaceRef = useRef<HTMLElement | null>(null);
+  const [requestPanelPercent, setRequestPanelPercent] = useState(47);
+  const [resizing, setResizing] = useState(false);
+
+  useEffect(() => {
+    if (!resizing) {
+      return undefined;
+    }
+
+    function updateFromPointer(event: PointerEvent) {
+      const bounds = workspaceRef.current?.getBoundingClientRect();
+
+      if (!bounds || bounds.width <= 0) {
+        return;
+      }
+
+      const nextPercent = ((event.clientX - bounds.left) / bounds.width) * 100;
+      setRequestPanelPercent(clampWorkspacePercent(nextPercent));
+    }
+
+    function stopResize() {
+      setResizing(false);
+    }
+
+    window.addEventListener('pointermove', updateFromPointer);
+    window.addEventListener('pointerup', stopResize, { once: true });
+    window.addEventListener('pointercancel', stopResize, { once: true });
+
+    return () => {
+      window.removeEventListener('pointermove', updateFromPointer);
+      window.removeEventListener('pointerup', stopResize);
+      window.removeEventListener('pointercancel', stopResize);
+    };
+  }, [resizing]);
+
+  function startResize(event: PointerEvent<HTMLButtonElement>) {
+    if (window.matchMedia('(max-width: 980px)').matches) {
+      return;
+    }
+
+    event.preventDefault();
+    setResizing(true);
+  }
+
+  function handleResizeKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      setRequestPanelPercent((current) => clampWorkspacePercent(current - WORKSPACE_KEYBOARD_STEP));
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      setRequestPanelPercent((current) => clampWorkspacePercent(current + WORKSPACE_KEYBOARD_STEP));
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      setRequestPanelPercent(MIN_WORKSPACE_PANEL_PERCENT);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      setRequestPanelPercent(MAX_WORKSPACE_PANEL_PERCENT);
+    }
+  }
+
+  const workspaceStyle: StyleVars = {
+    '--workspace-request-width': `${requestPanelPercent}%`,
+  };
+
+  return {
+    requestPanelPercent,
+    resizing,
+    startResize,
+    workspaceRef,
+    workspaceStyle,
+    handleResizeKeyDown,
+  };
 }

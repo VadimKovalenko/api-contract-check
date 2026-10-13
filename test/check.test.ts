@@ -210,10 +210,65 @@ test('required schema validation errors are returned alongside coverage', () => 
   assert.ok(result.validationErrors.some((error) => error.keyword === 'required'));
 });
 
+test('OpenAPI specs can use JSON media types with parameters and local schema refs', () => {
+  const result = checkResponseAgainstSpec({
+    yamlSpec: `
+openapi: 3.0.1
+paths:
+  /summary/{title}:
+    get:
+      responses:
+        200:
+          content:
+            application/json; charset=utf-8; profile="https://www.mediawiki.org/wiki/Specs/Summary/1.2.0":
+              schema:
+                $ref: '#/components/schemas/summary'
+components:
+  schemas:
+    summary:
+      type: object
+      required: [title, pageid, extract, lang]
+      properties:
+        title:
+          type: string
+        pageid:
+          type: integer
+        extract:
+          type: string
+        lang:
+          type: string
+`,
+    requestPath: '/api/rest_v1/page/summary/Earth',
+    data: {
+      title: 'Earth',
+      pageid: 9228,
+      extract: 'Third planet from the Sun.',
+      lang: 'en',
+    },
+  });
+
+  assert.equal(result.valid, true);
+  assert.equal(result.coveragePercent, 100);
+  assert.deepEqual(result.missingFields, []);
+});
+
+test('missing path matches report a clear error instead of using an unrelated path', () => {
+  assert.throws(
+    () => checkResponseAgainstSpec({
+      yamlSpec,
+      requestPath: '/projects/1',
+      data: { id: 1, name: 'Ada' },
+    }),
+    /No matching path found for \/projects\/1/,
+  );
+});
+
 test('POST /api/check fetches JSON and returns validation and coverage', async () => {
   const app = createApp({
     outboundFetch: async ({ url, headers }) => {
       assert.equal(url, 'https://api.example.test/users/1');
+      assert.equal(headers.Accept, 'application/json');
+      assert.equal(headers['User-Agent'], 'api-contract-check/1.0');
       assert.equal(headers.Authorization, 'Bearer secret');
 
       return {

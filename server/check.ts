@@ -2,6 +2,8 @@ import YAML from 'yaml';
 import { Ajv, type ErrorObject } from 'ajv';
 import type { AuthPayload, CheckResult, CoverageField, CoverageResult, JsonSchema, OpenApiPaths } from './types.js';
 
+const OUTBOUND_USER_AGENT = 'api-contract-check/1.0';
+
 export class CheckError extends Error {
   statusCode: number;
 
@@ -27,6 +29,7 @@ export function normalizeCheckError(error: unknown) {
 export function buildHeaders(auth: AuthPayload = { type: 'none' }) {
   const headers: Record<string, string> = {
     Accept: 'application/json',
+    'User-Agent': OUTBOUND_USER_AGENT,
   };
 
   if (!auth || auth.type === 'none') {
@@ -81,7 +84,7 @@ export function extractJsonSchema(spec: JsonSchema, requestPath: string, method 
   const responses = isRecord(operation) ? operation.responses : undefined;
   const response = isRecord(responses) ? responses['200'] ?? responses[200] : undefined;
   const content = isRecord(response) ? response.content : undefined;
-  const jsonContent = isRecord(content) ? content['application/json'] : undefined;
+  const jsonContent = pickJsonContent(content);
   const schema = isRecord(jsonContent) ? jsonContent.schema : undefined;
 
   if (!isRecord(schema)) {
@@ -308,20 +311,42 @@ function pickPathKey(paths: OpenApiPaths, requestPath: string) {
     return requestPath;
   }
 
-  const match = Object.keys(paths).find((path) => pathToRegex(path).test(requestPath));
+  const pathKeys = Object.keys(paths);
+  const match = pathKeys.find((path) => pathToRegex(path).test(requestPath));
   if (match) {
     return match;
   }
 
-  const firstPath = Object.keys(paths)[0];
-  if (firstPath) {
-    return firstPath;
+  const suffixMatch = pathKeys.find((path) => pathToRegex(path, true).test(requestPath));
+  if (suffixMatch) {
+    return suffixMatch;
+  }
+
+  if (pathKeys.length > 0) {
+    throw new CheckError(
+      `No matching path found for ${requestPath}. The spec defines: ${pathKeys.slice(0, 5).join(', ')}.`,
+    );
   }
 
   throw new CheckError('The spec does not define any paths.');
 }
 
-function pathToRegex(path: string) {
+function pickJsonContent(content: unknown) {
+  if (!isRecord(content)) {
+    return undefined;
+  }
+
+  return Object.entries(content).find(([mediaType]) => isJsonMediaType(mediaType))?.[1];
+}
+
+function isJsonMediaType(mediaType: string) {
+  const [type = ''] = mediaType.toLowerCase().split(';');
+  const normalized = type.trim();
+
+  return normalized === 'application/json' || normalized.endsWith('+json');
+}
+
+function pathToRegex(path: string, allowSuffix = false) {
   const pattern = path
     .split('/')
     .map((segment) => {
@@ -333,7 +358,7 @@ function pathToRegex(path: string) {
     })
     .join('/');
 
-  return new RegExp(`^${pattern}$`);
+  return new RegExp(allowSuffix ? `(?:^|/)${pattern.replace(/^\/+/, '')}$` : `^${pattern}$`);
 }
 function dereferenceSchema(schema: unknown, spec: JsonSchema, seen = new Set<string>()): unknown {
   if (!isRecord(schema)) {
@@ -366,6 +391,7 @@ function resolveRef(ref: string, spec: JsonSchema) {
   const resolved = ref
     .slice(2)
     .split('/')
+    .map(decodeRefPart)
     .reduce<unknown>((node, part) => (isRecord(node) ? node[part] : undefined), spec);
 
   if (!resolved) {
@@ -373,6 +399,10 @@ function resolveRef(ref: string, spec: JsonSchema) {
   }
 
   return resolved;
+}
+
+function decodeRefPart(part: string) {
+  return decodeURIComponent(part).replace(/~1/g, '/').replace(/~0/g, '~');
 }
 
 function isRecord(value: unknown): value is Record<string | number, unknown> {
