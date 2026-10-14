@@ -1,6 +1,6 @@
 ---
 name: project-metrics-update
-description: Update this project's METRICS.md with metrics for the recent session only, preserving the existing baseline and historical aggregate.
+description: Update this project's METRICS.md with metrics for the recent session and refresh the Total aggregation row, preserving the existing baseline and older run-log rows.
 ---
 
 # Project Metrics Update
@@ -10,8 +10,9 @@ Use this skill when asked to update `METRICS.md`, project metrics, token usage, 
 ## Scope
 
 - Update metrics for the recent session or current turn only.
-- Preserve the existing baseline, historical aggregate, and older run-log rows unless explicitly asked to revise them.
-- Do not recalculate from the beginning of the project; the baseline already exists in `METRICS.md`.
+- Preserve the existing baseline and older run-log rows unless explicitly asked to revise them.
+- Always update the `Total aggregation` row so it includes the newly added or updated recent-session row.
+- Do not revise baseline facts from the beginning of the project; use the existing run-log rows plus the recent-session row to refresh aggregate sums.
 - Keep estimates honest: mark unavailable values as `n/a` and label approximations with `~` or an explanatory note.
 
 ## Workflow
@@ -24,9 +25,10 @@ Use this skill when asked to update `METRICS.md`, project metrics, token usage, 
    - user-provided token/cache telemetry, if any
 3. If exact model telemetry is unavailable, estimate only the recent session values and say they are estimates in the row or notes.
 4. Add a new run-log row for the recent session, or update the current-day metrics row if it clearly refers to the same session.
-5. Update measured snapshot values only when the session actually produced fresher measured values.
-6. Leave application metrics as `n/a` unless they were measured during the session.
-7. After editing, read back the changed section to check table formatting and totals.
+5. Update the `Total aggregation` row by folding in the new or updated run-log row. Keep approximate markers (`~`) when any included values are estimates.
+6. Update measured snapshot values only when the session actually produced fresher measured values.
+7. Leave application metrics as `n/a` unless they were measured during the session.
+8. After editing, read back the changed section to check table formatting and totals.
 
 ## Estimation Guidance
 
@@ -34,7 +36,7 @@ Use this skill when asked to update `METRICS.md`, project metrics, token usage, 
 - If provider telemetry is unavailable, estimate recent-session token usage from visible context, tool output volume, and edits performed.
 - Keep thinking-time estimates conservative. For a brief documentation or metrics edit, thinking time is usually minutes, not hours.
 - Cache hits and cache hit rate should remain `n/a` unless provider telemetry is available.
-- Aggregate rows should not be changed unless the new row is intentionally folded into an aggregate and the note explains that.
+- Aggregate rows should be changed on every metrics update to include the latest session, and the note should explain that the aggregate is a manual sum of the run-log rows.
 
 ## Row Notes
 
