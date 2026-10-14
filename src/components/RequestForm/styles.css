@@ -13,6 +13,19 @@
   gap: 12px;
 }
 
+.yaml-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.yaml-title .info-tip-text {
+  width: min(340px, 78vw);
+  font-weight: 650;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 .yaml-actions {
   display: inline-flex;
   align-items: center;
@@ -130,18 +143,18 @@ input::placeholder { color: var(--color-text-placeholder); }
   gap: 7px;
   padding: 0 10px;
   color: var(--color-text-preview);
-  background: var(--color-surface-raised);
-  border: 1px solid var(--color-border-strong);
+  background: var(--color-transparent);
+  border: 0;
   border-radius: 8px;
   font-size: 0.78rem;
   font-weight: 800;
+  text-shadow: 0 1px 2px var(--color-action-shadow);
   white-space: nowrap;
 }
 
 .format-button:hover {
-  color: var(--color-text-on-accent);
-  background: var(--color-accent);
-  border-color: var(--color-accent-border);
+  color: var(--color-text-control-hover);
+  background: var(--color-transparent);
 }
 
 .format-error {

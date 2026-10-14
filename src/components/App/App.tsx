@@ -1,5 +1,6 @@
 import { Box, ExternalLink, Loader2, Moon, Play, Save, ShieldCheck, Sun, X } from 'lucide-react';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { MetricCard } from '../MetricCard';
 import { MyYamls } from '../MyYamls';
@@ -114,34 +115,138 @@ export function App() {
     navigate('/');
   }
 
-  return (
-    <main className="app-shell" data-theme={theme} style={themeStyle}>
-      <div className="background-fog" ref={fogRef} aria-hidden="true" />
-      {privacyVisible ? (
-        <section className="privacy-banner" aria-label="Privacy notice">
-          <div className="privacy-banner-copy">
-            <ShieldCheck size={19} />
-            <p>
-              We do not collect or log sensitive data. You can run this app locally from the
-              GitHub repository.
-            </p>
-          </div>
-          <div className="privacy-banner-actions">
-            <button className="privacy-link-button" onClick={() => setPrivacyOpen(true)} type="button">
-              Details
-            </button>
-            <button
-              aria-label="Dismiss privacy notice"
-              className="privacy-icon-button"
-              onClick={dismissPrivacyNotice}
-              type="button"
-            >
-              <X size={18} />
-            </button>
-          </div>
-        </section>
+  const modalLayer = (
+    <>
+      {privacyOpen ? (
+        <div className="privacy-modal-backdrop" role="presentation">
+          <section
+            aria-labelledby="privacy-modal-title"
+            aria-modal="true"
+            className="privacy-modal"
+            role="dialog"
+          >
+            <div className="privacy-modal-heading">
+              <div>
+                <p className="eyebrow">Privacy notice</p>
+                <h2 id="privacy-modal-title">Sensitive data stays out of our logs</h2>
+              </div>
+              <button
+                aria-label="Close privacy notice"
+                className="privacy-icon-button"
+                onClick={() => setPrivacyOpen(false)}
+                type="button"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="privacy-modal-body">
+              <p>
+                This app is designed for endpoint schema checks. It does not intentionally collect,
+                store, or log sensitive request data, authorization values, cookies, or response
+                payloads.
+              </p>
+              <p>
+                For the most private workflow, install and run the app locally from the public
+                repository instead of sending internal API details to a hosted deployment.
+              </p>
+            </div>
+            <div className="privacy-modal-actions">
+              <a
+                className="privacy-repo-link"
+                href="https://github.com/VadimKovalenko/api-contract-check"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Open GitHub repo
+                <ExternalLink size={16} />
+              </a>
+              <button className="privacy-link-button" onClick={() => setPrivacyOpen(false)} type="button">
+                Close
+              </button>
+            </div>
+          </section>
+        </div>
       ) : null}
-      <nav className="app-nav" aria-label="Primary navigation">
+      {saveDialogOpen ? (
+        <div className="privacy-modal-backdrop" role="presentation">
+          <form
+            aria-labelledby="save-yaml-title"
+            aria-modal="true"
+            className="privacy-modal save-yaml-modal"
+            onSubmit={saveCurrentYaml}
+            role="dialog"
+          >
+            <div className="privacy-modal-heading">
+              <div>
+                <p className="eyebrow">Save YAML</p>
+                <h2 id="save-yaml-title">Add this request to My Yamls</h2>
+              </div>
+              <button
+                aria-label="Cancel save"
+                className="privacy-icon-button"
+                onClick={() => setSaveDialogOpen(false)}
+                type="button"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <label className="field">
+              <span>Name</span>
+              <input
+                autoFocus
+                onChange={(event) => setSaveTitle(event.target.value)}
+                placeholder="User profile schema"
+                value={saveTitle}
+              />
+            </label>
+            <div className="save-yaml-preview">
+              <span>Request</span>
+              <code>{form.url}</code>
+            </div>
+            <div className="privacy-modal-actions">
+              <button className="privacy-link-button" onClick={() => setSaveDialogOpen(false)} type="button">
+                Cancel
+              </button>
+              <button className="run-button" disabled={!form.url.trim() || !form.yamlSpec.trim()} type="submit">
+                <Save size={17} />
+                <span>Save</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+    </>
+  );
+
+  return (
+    <>
+      <main className="app-shell" data-theme={theme} style={themeStyle}>
+        <div className="background-fog" ref={fogRef} aria-hidden="true" />
+        {privacyVisible ? (
+          <section className="privacy-banner" aria-label="Privacy notice">
+            <div className="privacy-banner-copy">
+              <ShieldCheck size={19} />
+              <p>
+                We do not collect or log sensitive data. You can run this app locally from the
+                GitHub repository.
+              </p>
+            </div>
+            <div className="privacy-banner-actions">
+              <button className="privacy-link-button" onClick={() => setPrivacyOpen(true)} type="button">
+                Details
+              </button>
+              <button
+                aria-label="Dismiss privacy notice"
+                className="privacy-icon-button"
+                onClick={dismissPrivacyNotice}
+                type="button"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </section>
+        ) : null}
+        <nav className="app-nav" aria-label="Primary navigation">
         <NavLink className="brand-mark" to="/">
           <span className="brand-icon" aria-hidden="true">
             <Box size={18} />
@@ -258,106 +363,9 @@ export function App() {
             />
           )}
         />
-      </Routes>
-
-      {privacyOpen ? (
-        <div className="privacy-modal-backdrop" role="presentation">
-          <section
-            aria-labelledby="privacy-modal-title"
-            aria-modal="true"
-            className="privacy-modal"
-            role="dialog"
-          >
-            <div className="privacy-modal-heading">
-              <div>
-                <p className="eyebrow">Privacy notice</p>
-                <h2 id="privacy-modal-title">Sensitive data stays out of our logs</h2>
-              </div>
-              <button
-                aria-label="Close privacy notice"
-                className="privacy-icon-button"
-                onClick={() => setPrivacyOpen(false)}
-                type="button"
-              >
-                <X size={18} />
-              </button>
-            </div>
-            <div className="privacy-modal-body">
-              <p>
-                This app is designed for endpoint schema checks. It does not intentionally collect,
-                store, or log sensitive request data, authorization values, cookies, or response
-                payloads.
-              </p>
-              <p>
-                For the most private workflow, install and run the app locally from the public
-                repository instead of sending internal API details to a hosted deployment.
-              </p>
-            </div>
-            <div className="privacy-modal-actions">
-              <a
-                className="privacy-repo-link"
-                href="https://github.com/VadimKovalenko/api-contract-check"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Open GitHub repo
-                <ExternalLink size={16} />
-              </a>
-              <button className="privacy-link-button" onClick={() => setPrivacyOpen(false)} type="button">
-                Close
-              </button>
-            </div>
-          </section>
-        </div>
-      ) : null}
-      {saveDialogOpen ? (
-        <div className="privacy-modal-backdrop" role="presentation">
-          <form
-            aria-labelledby="save-yaml-title"
-            aria-modal="true"
-            className="privacy-modal save-yaml-modal"
-            onSubmit={saveCurrentYaml}
-            role="dialog"
-          >
-            <div className="privacy-modal-heading">
-              <div>
-                <p className="eyebrow">Save YAML</p>
-                <h2 id="save-yaml-title">Add this request to My Yamls</h2>
-              </div>
-              <button
-                aria-label="Cancel save"
-                className="privacy-icon-button"
-                onClick={() => setSaveDialogOpen(false)}
-                type="button"
-              >
-                <X size={18} />
-              </button>
-            </div>
-            <label className="field">
-              <span>Name</span>
-              <input
-                autoFocus
-                onChange={(event) => setSaveTitle(event.target.value)}
-                placeholder="User profile schema"
-                value={saveTitle}
-              />
-            </label>
-            <div className="save-yaml-preview">
-              <span>Request</span>
-              <code>{form.url}</code>
-            </div>
-            <div className="privacy-modal-actions">
-              <button className="privacy-link-button" onClick={() => setSaveDialogOpen(false)} type="button">
-                Cancel
-              </button>
-              <button className="run-button" disabled={!form.url.trim() || !form.yamlSpec.trim()} type="submit">
-                <Save size={17} />
-                <span>Save</span>
-              </button>
-            </div>
-          </form>
-        </div>
-      ) : null}
-    </main>
+        </Routes>
+      </main>
+      {createPortal(modalLayer, document.body)}
+    </>
   );
 }

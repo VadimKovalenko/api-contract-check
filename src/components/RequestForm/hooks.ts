@@ -1,6 +1,13 @@
 import YAML from 'yaml';
 import { authTypes } from './constants';
 
+const defaultPathParamExamples: Record<string, string> = {
+  id: '1',
+  page: 'Earth',
+  slug: 'earth',
+  title: 'Earth',
+};
+
 export function useAuthTypes() {
   return authTypes;
 }
@@ -16,6 +23,35 @@ export function formatYamlSpec(value: string) {
     indent: 2,
     lineWidth: 0,
   });
+}
+
+export function deriveExampleUrlFromOpenApi(value: string) {
+  try {
+    const parsed = YAML.parse(value) as unknown;
+
+    if (!isRecord(parsed) || !isRecord(parsed.paths)) {
+      return '';
+    }
+
+    const serverUrl = getServerUrl(parsed.servers);
+    if (!serverUrl) {
+      return '';
+    }
+
+    const path = Object.entries(parsed.paths).find(([, pathItem]) => (
+      isRecord(pathItem) && isRecord(pathItem.get)
+    ))?.[0];
+
+    if (!path) {
+      return '';
+    }
+
+    return joinUrl(serverUrl, path.replace(/\{([^}]+)\}/g, (_match, key: string) => (
+      encodeURIComponent(defaultPathParamExamples[key.toLowerCase()] ?? 'example')
+    )));
+  } catch {
+    return '';
+  }
 }
 
 export interface YamlTabResult {
@@ -109,4 +145,21 @@ function outdentAtCursor(value: string, selectionStart: number): YamlTabResult {
     selectionStart: selectionStart - removable,
     selectionEnd: selectionStart - removable,
   };
+}
+
+function getServerUrl(servers: unknown) {
+  if (!Array.isArray(servers)) {
+    return '';
+  }
+
+  const firstServer = servers.find((server) => isRecord(server) && typeof server.url === 'string');
+  return isRecord(firstServer) && typeof firstServer.url === 'string' ? firstServer.url.trim() : '';
+}
+
+function joinUrl(serverUrl: string, path: string) {
+  return `${serverUrl.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }

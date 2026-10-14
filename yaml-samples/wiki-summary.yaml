@@ -1,0 +1,68 @@
+# Matching request URL:
+# https://en.wikipedia.org/api/rest_v1/page/summary/Earth
+openapi: 3.0.1
+servers:
+  - url: https://en.wikipedia.org/api/rest_v1
+paths:
+  /page/summary/{title}:
+    get:
+      responses:
+        '200':
+          description: Page summary
+          content:
+            'application/json; charset=utf-8; profile="https://www.mediawiki.org/wiki/Specs/Summary/1.5.0"':
+              schema:
+                $ref: '#/components/schemas/PageSummary'
+components:
+  schemas:
+    PageSummary:
+      type: object
+      required: [ title, pageid, extract, lang ]
+      properties:
+        title:
+          type: string
+        pageid:
+          type: integer
+        lang:
+          type: string
+        extract:
+          type: string
+        description:
+          type: [ string, 'null' ]
+        content_urls:
+          $ref: '#/components/schemas/ContentUrls'
+        thumbnail:
+          $ref: '#/components/schemas/ImageInfo'
+        originalimage:
+          $ref: '#/components/schemas/ImageInfo'
+
+    ContentUrls:
+      type: object
+      properties:
+        desktop:
+          $ref: '#/components/schemas/PageUrls'
+        mobile:
+          $ref: '#/components/schemas/PageUrls'
+
+    PageUrls:
+      type: object
+      properties:
+        page:
+          type: string
+        revisions:
+          type: string
+        edit:
+          type: string
+        talk:
+          type: string
+
+    ImageInfo:
+      type: object
+      required: [ source, width, height ]
+      properties:
+        source:
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer

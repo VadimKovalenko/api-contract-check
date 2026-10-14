@@ -109,16 +109,19 @@
 .nav-tabs {
   --nav-gap: 4px;
   --nav-padding: 4px;
-  --nav-item-width: calc(
-    (100% - (var(--nav-padding) * 2) - (var(--nav-gap) * (var(--nav-count) - 1))) / var(--nav-count)
-  );
+  --nav-radius: 8px;
+  --nav-inner-radius: 6px;
+  --nav-item-min-width: 96px;
+  --nav-item-width: var(--nav-item-min-width);
+  --nav-thumb-end-inset: 2px;
   position: relative;
+  display: inline-flex;
   justify-self: center;
   gap: var(--nav-gap);
   padding: var(--nav-padding);
   background: var(--color-nav-surface);
   border: 1px solid var(--color-border-subtle);
-  border-radius: 8px;
+  border-radius: var(--nav-radius);
   backdrop-filter: blur(16px);
 }
 
@@ -129,12 +132,12 @@
   bottom: var(--nav-padding);
   left: var(--nav-padding);
   z-index: 0;
-  width: var(--nav-item-width);
+  width: calc(var(--nav-item-width) - var(--nav-thumb-end-inset));
   background: var(--color-nav-surface-active);
   border: 1px solid var(--color-border-subtle);
-  border-radius: 8px;
+  border-radius: var(--nav-inner-radius);
   box-shadow: 0 10px 26px var(--color-action-shadow);
-  transform: translateX(calc(var(--nav-index) * (100% + var(--nav-gap))));
+  transform: translateX(calc(var(--nav-index) * (var(--nav-item-width) + var(--nav-gap))));
   transition:
     transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
     width 0.42s cubic-bezier(0.22, 1, 0.36, 1),
@@ -146,7 +149,8 @@
 .nav-tabs a {
   position: relative;
   z-index: 1;
-  min-width: 88px;
+  width: var(--nav-item-min-width);
+  min-width: var(--nav-item-min-width);
   min-height: 36px;
   display: inline-flex;
   align-items: center;
@@ -155,7 +159,7 @@
   color: var(--color-text-control-muted);
   background: var(--color-transparent);
   border: 1px solid var(--color-transparent);
-  border-radius: 8px;
+  border-radius: var(--nav-inner-radius);
   font-size: 0.86rem;
   font-weight: 800;
   text-decoration: none;
@@ -397,6 +401,7 @@
   flex: 0 0 36px;
   justify-content: center;
   padding: 0;
+  border: 0;
 }
 
 .privacy-link-button:hover,
@@ -675,6 +680,7 @@
     justify-self: stretch;
   }
   .nav-tabs {
+    --nav-item-min-width: 112px;
     overflow-x: auto;
     justify-content: flex-start;
   }
@@ -716,9 +722,6 @@
   .nav-actions {
     align-items: stretch;
     flex-direction: column;
-  }
-  .nav-tabs a {
-    min-width: 112px;
   }
   .theme-toggle { justify-content: center; }
   .metric-grid { grid-template-columns: 1fr; }

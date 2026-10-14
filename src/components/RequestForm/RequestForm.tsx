@@ -1,12 +1,12 @@
 import type { FormEvent } from 'react';
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { yaml } from '@codemirror/lang-yaml';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorView } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
-import { Check, Copy, KeyRound, Save, Sparkles } from 'lucide-react';
-import { formatYamlSpec, useAuthTypes } from './hooks';
+import { Check, Copy, Info, KeyRound, Save, Sparkles } from 'lucide-react';
+import { deriveExampleUrlFromOpenApi, formatYamlSpec, useAuthTypes } from './hooks';
 import type { CheckFormState, RunCheck, UpdateFormField } from '../../types';
 import './styles.css';
 
@@ -73,9 +73,11 @@ const yamlEditorTheme = EditorView.theme({
 });
 
 const yamlEditorExtensions = [yaml(), syntaxHighlighting(yamlHighlightStyle), yamlEditorTheme, EditorView.lineWrapping];
+const yamlHelperText = 'Pasted specs only work when the Endpoint URL matches the documented server and path. If validation says required root fields are missing, compare Response Preview top-level keys with the schema required fields.';
 
 export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField }: RequestFormProps) {
   const authTypes = useAuthTypes();
+  const yamlTipId = useId();
   const yamlEditorRef = useRef<ReactCodeMirrorRef | null>(null);
   const [copied, setCopied] = useState(false);
   const [formatError, setFormatError] = useState('');
@@ -83,6 +85,11 @@ export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField
   function updateYamlSpec(value: string) {
     setFormatError('');
     onUpdateField('yamlSpec', value);
+
+    const exampleUrl = deriveExampleUrlFromOpenApi(value);
+    if (exampleUrl && exampleUrl !== form.url) {
+      onUpdateField('url', exampleUrl);
+    }
   }
 
   function restoreYamlSelection(selectionStart: number, selectionEnd: number) {
@@ -172,7 +179,20 @@ export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField
 
       <div className="field grow-field">
         <div className="field-header">
-          <span>OpenAPI subset YAML</span>
+          <span className="yaml-title">
+            OpenAPI subset YAML
+            <span className="info-tip">
+              <button
+                aria-describedby={yamlTipId}
+                aria-label="OpenAPI subset YAML info"
+                className="info-tip-button"
+                type="button"
+              >
+                <Info size={15} />
+              </button>
+              <span className="info-tip-text" id={yamlTipId} role="tooltip">{yamlHelperText}</span>
+            </span>
+          </span>
           <div className="yaml-actions">
             <button className="format-button" onClick={() => void copyYamlSpec()} type="button">
               {copied ? <Check size={15} /> : <Copy size={15} />}

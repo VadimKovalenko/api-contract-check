@@ -5,7 +5,8 @@ import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
 import { type FormEvent, useState } from 'react';
-import { Check, ChevronDown, Copy, FileCode2, Play, Plus, Trash2, X } from 'lucide-react';
+import { Check, ChevronDown, Copy, FileCode2, Play, Trash2, X } from 'lucide-react';
+import { deriveExampleUrlFromOpenApi } from '../RequestForm/hooks';
 import type { SavedYaml } from '../../types';
 import './styles.css';
 
@@ -117,6 +118,15 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
     });
   }
 
+  function updateYamlSpec(value: string) {
+    setYamlSpec(value);
+
+    const exampleUrl = deriveExampleUrlFromOpenApi(value);
+    if (exampleUrl && exampleUrl !== url) {
+      setUrl(exampleUrl);
+    }
+  }
+
   return (
     <section className="yamls-page" aria-labelledby="my-yamls-title">
       <div className="yamls-heading">
@@ -133,7 +143,6 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
             <p className="eyebrow">Create</p>
             <h2>Save a YAML contract</h2>
           </div>
-          <Plus size={20} />
         </div>
         <div className="yaml-create-grid">
           <label className="field">
@@ -158,15 +167,14 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
           <span>YAML schema</span>
           <textarea
             className="yaml-create-textarea"
-            onChange={(event) => setYamlSpec(event.target.value)}
+            onChange={(event) => updateYamlSpec(event.target.value)}
             placeholder="openapi: 3.0.1"
             required
             value={yamlSpec}
           />
         </label>
         <div className="yaml-create-actions">
-          <button className="run-button" disabled={!url.trim() || !yamlSpec.trim()} type="submit">
-            <Plus size={17} />
+          <button className="run-button create-yaml-button" disabled={!url.trim() || !yamlSpec.trim()} type="submit">
             <span>Create YAML</span>
           </button>
         </div>

@@ -53,6 +53,11 @@
   justify-content: flex-end;
 }
 
+.create-yaml-button {
+  gap: 0;
+  padding: 0 14px;
+}
+
 .yamls-empty {
   min-height: 260px;
   display: grid;
@@ -108,13 +113,11 @@
 
 .preview-action-button.danger {
   color: var(--color-danger);
-  border-color: var(--color-danger-border);
 }
 
 .preview-action-button.danger:hover {
   color: var(--color-danger-text-soft);
   background: var(--color-danger-bg);
-  border-color: var(--color-danger-border-strong);
 }
 
 .yaml-card-request {

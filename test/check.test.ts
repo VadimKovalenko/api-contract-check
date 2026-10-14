@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   calculateCoverage,
   checkResponseAgainstSpec,
@@ -8,7 +9,9 @@ import {
 } from '../server/check.js';
 import { createApp } from '../server/app.js';
 import { fetchEndpoint, redactSecrets } from '../server/outboundFetch.js';
-import { applyYamlTab, formatYamlSpec } from '../src/components/RequestForm/hooks.js';
+import { applyYamlTab, deriveExampleUrlFromOpenApi, formatYamlSpec } from '../src/components/RequestForm/hooks.js';
+
+const wikiSummarySpec = readFileSync(new URL('../yaml-samples/wiki-summary.yaml', import.meta.url), 'utf8');
 
 const userSchema = {
   type: 'object',
@@ -250,6 +253,55 @@ components:
   assert.equal(result.valid, true);
   assert.equal(result.coveragePercent, 100);
   assert.deepEqual(result.missingFields, []);
+});
+
+test('Wikimedia summary sample matches the intended summary endpoint shape', () => {
+  const result = checkResponseAgainstSpec({
+    yamlSpec: wikiSummarySpec,
+    requestPath: '/api/rest_v1/page/summary/Earth',
+    data: {
+      title: 'Earth',
+      pageid: 9228,
+      extract: 'Third planet from the Sun.',
+      lang: 'en',
+      description: 'Third planet from the Sun',
+      content_urls: {
+        desktop: {
+          page: 'https://en.wikipedia.org/wiki/Earth',
+          revisions: 'https://en.wikipedia.org/wiki/Earth?action=history',
+          edit: 'https://en.wikipedia.org/wiki/Earth?action=edit',
+          talk: 'https://en.wikipedia.org/wiki/Talk:Earth',
+        },
+        mobile: {
+          page: 'https://en.wikipedia.org/wiki/Earth',
+          revisions: 'https://en.wikipedia.org/wiki/Special:History/Earth',
+          edit: 'https://en.wikipedia.org/wiki/Earth?action=edit',
+          talk: 'https://en.wikipedia.org/wiki/Talk:Earth',
+        },
+      },
+      thumbnail: {
+        source: 'https://thumb.wikimedia.org/wikipedia/commons/example.jpg',
+        width: 330,
+        height: 330,
+      },
+      originalimage: {
+        source: 'https://thumb.wikimedia.org/wikipedia/commons/example-original.jpg',
+        width: 12261,
+        height: 12261,
+      },
+    },
+  });
+
+  assert.equal(result.valid, true);
+  assert.equal(result.coveragePercent, 100);
+  assert.deepEqual(result.missingRequiredFields, []);
+});
+
+test('Wikimedia summary sample exposes a runnable example URL', () => {
+  assert.equal(
+    deriveExampleUrlFromOpenApi(wikiSummarySpec),
+    'https://en.wikipedia.org/api/rest_v1/page/summary/Earth',
+  );
 });
 
 test('missing path matches report a clear error instead of using an unrelated path', () => {
