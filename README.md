@@ -43,12 +43,17 @@ Production-oriented nginx, systemd, and Lightsail Terraform files live in `infra
 npm test
 ```
 
+## Ready-to-Run Samples
+
+`yaml-samples/` contains public, no-authentication API contracts. Each file starts with the exact request URL to paste into the app alongside its YAML schema.
+
 ## Project Structure
 
 ```text
 server/   Express API and schema validation logic
 src/      React application
 test/     Node test runner tests
+yaml-samples/  Ready-to-run public API contract samples
 ```
 
 ## Notes

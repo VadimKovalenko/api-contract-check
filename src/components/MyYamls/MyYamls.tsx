@@ -7,7 +7,6 @@ import { tags } from '@lezer/highlight';
 import { type FormEvent, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, ChevronDown, Copy, FileCode2, Play, Trash2, X } from 'lucide-react';
-import { deriveExampleUrlFromOpenApi } from '../RequestForm/hooks';
 import { useModalAccessibility } from '../useModalAccessibility';
 import type { SavedYaml } from '../../types';
 import './styles.css';
@@ -121,15 +120,6 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
     });
   }
 
-  function updateYamlSpec(value: string) {
-    setYamlSpec(value);
-
-    const exampleUrl = deriveExampleUrlFromOpenApi(value);
-    if (exampleUrl && exampleUrl !== url) {
-      setUrl(exampleUrl);
-    }
-  }
-
   return (
     <section aria-hidden={Boolean(deleteTarget)} className="yamls-page" aria-labelledby="my-yamls-title" inert={Boolean(deleteTarget)}>
       <div className="yamls-heading">
@@ -176,7 +166,7 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
           <textarea
             autoComplete="off"
             className="yaml-create-textarea"
-            onChange={(event) => updateYamlSpec(event.target.value)}
+              onChange={(event) => setYamlSpec(event.target.value)}
             placeholder="openapi: 3.0.1"
             required
             value={yamlSpec}

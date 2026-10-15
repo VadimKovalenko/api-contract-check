@@ -1,0 +1,31 @@
+# Matching request URL:
+# https://api.github.com/users/octocat
+openapi: 3.0.1
+servers:
+  - url: https://api.github.com
+paths:
+  /users/octocat:
+    get:
+      responses:
+        '200':
+          description: Public GitHub user profile
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ login, id, avatar_url, html_url, type, site_admin, public_repos ]
+                properties:
+                  login:
+                    type: string
+                  id:
+                    type: integer
+                  avatar_url:
+                    type: string
+                  html_url:
+                    type: string
+                  type:
+                    type: string
+                  site_admin:
+                    type: boolean
+                  public_repos:
+                    type: integer

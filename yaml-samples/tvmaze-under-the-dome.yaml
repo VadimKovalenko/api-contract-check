@@ -1,0 +1,41 @@
+# Matching request URL:
+# https://api.tvmaze.com/shows/1
+openapi: 3.0.1
+servers:
+  - url: https://api.tvmaze.com
+paths:
+  /shows/{id}:
+    get:
+      responses:
+        '200':
+          description: TV show details
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ id, name, type, language, genres, status, premiered, rating, url ]
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  type:
+                    type: string
+                  language:
+                    type: string
+                  genres:
+                    type: array
+                    items:
+                      type: string
+                  status:
+                    type: string
+                  premiered:
+                    type: string
+                  rating:
+                    type: object
+                    required: [ average ]
+                    properties:
+                      average:
+                        type: [ number, 'null' ]
+                  url:
+                    type: string

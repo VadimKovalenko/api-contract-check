@@ -7,7 +7,7 @@ import { EditorView } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
 import { Check, Copy, Info, KeyRound, Save, Sparkles } from 'lucide-react';
 import { highlightEditorField } from '../editorHighlight';
-import { deriveExampleUrlFromOpenApi, formatYamlSpec, useAuthTypes } from './hooks';
+import { formatYamlSpec, useAuthTypes } from './hooks';
 import type { CheckFormState, FieldHighlight, RunCheck, UpdateFormField } from '../../types';
 import './styles.css';
 
@@ -17,6 +17,7 @@ interface RequestFormProps {
   onRunCheck: RunCheck;
   onSaveCurrentYaml: () => void;
   onUpdateField: UpdateFormField;
+  recentUrls: string[];
 }
 
 function getErrorMessage(error: unknown) {
@@ -55,7 +56,7 @@ const yamlEditorTheme = EditorView.theme({
   },
   '.cm-content': {
     minHeight: '360px',
-    padding: '14px',
+    padding: '14px 14px 14px 0',
     caretColor: 'var(--color-text)',
   },
   '.cm-cursor, .cm-dropCursor': {
@@ -77,8 +78,9 @@ const yamlEditorTheme = EditorView.theme({
 const yamlEditorExtensions = [yaml(), syntaxHighlighting(yamlHighlightStyle), yamlEditorTheme, EditorView.lineWrapping];
 const yamlHelperText = 'Pasted specs only work when the Endpoint URL matches the documented server and path. If validation says required root fields are missing, compare Response Preview top-level keys with the schema required fields.';
 
-export function RequestForm({ form, highlightRequest, onRunCheck, onSaveCurrentYaml, onUpdateField }: RequestFormProps) {
+export function RequestForm({ form, highlightRequest, onRunCheck, onSaveCurrentYaml, onUpdateField, recentUrls }: RequestFormProps) {
   const authTypes = useAuthTypes();
+  const recentUrlsId = useId();
   const yamlTipId = useId();
   const yamlLabelId = useId();
   const formatStatusId = useId();
@@ -95,11 +97,6 @@ export function RequestForm({ form, highlightRequest, onRunCheck, onSaveCurrentY
   function updateYamlSpec(value: string) {
     setFormatError('');
     onUpdateField('yamlSpec', value);
-
-    const exampleUrl = deriveExampleUrlFromOpenApi(value);
-    if (exampleUrl && exampleUrl !== form.url) {
-      onUpdateField('url', exampleUrl);
-    }
   }
 
   function restoreYamlSelection(selectionStart: number, selectionEnd: number) {
@@ -153,17 +150,21 @@ export function RequestForm({ form, highlightRequest, onRunCheck, onSaveCurrentY
       <label className="field">
         <span>Endpoint URL</span>
         <input
-          autoComplete="off"
+          autoComplete="url"
           inputMode="url"
-          name="endpoint-url"
+          name="url"
           required
           spellCheck={false}
           type="url"
           value={form.url}
+          list={recentUrlsId}
           onChange={(event) => onUpdateField('url', event.target.value)}
           placeholder="https://api.example.com/users/1"
         />
       </label>
+      <datalist id={recentUrlsId}>
+        {recentUrls.map((url) => <option key={url} value={url} />)}
+      </datalist>
 
       <fieldset className="auth-box">
         <legend className="auth-title"><KeyRound aria-hidden="true" size={16} /> Authentication</legend>
@@ -246,7 +247,7 @@ export function RequestForm({ form, highlightRequest, onRunCheck, onSaveCurrentY
             foldGutter: false,
             highlightActiveLine: false,
             highlightActiveLineGutter: false,
-            lineNumbers: false,
+            lineNumbers: true,
           }}
           height="100%"
           indentWithTab

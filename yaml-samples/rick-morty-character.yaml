@@ -1,0 +1,49 @@
+# Matching request URL:
+# https://rickandmortyapi.com/api/character/1
+openapi: 3.0.1
+servers:
+  - url: https://rickandmortyapi.com/api
+paths:
+  /character/{id}:
+    get:
+      responses:
+        '200':
+          description: Rick and Morty character
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ id, name, status, species, gender, origin, location, image, episode ]
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  status:
+                    type: string
+                  species:
+                    type: string
+                  gender:
+                    type: string
+                  origin:
+                    type: object
+                    required: [ name, url ]
+                    properties:
+                      name:
+                        type: string
+                      url:
+                        type: string
+                  location:
+                    type: object
+                    required: [ name, url ]
+                    properties:
+                      name:
+                        type: string
+                      url:
+                        type: string
+                  image:
+                    type: string
+                  episode:
+                    type: array
+                    items:
+                      type: string

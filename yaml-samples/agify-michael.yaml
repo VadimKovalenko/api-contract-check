@@ -1,0 +1,23 @@
+# Matching request URL:
+# https://api.agify.io/?name=michael
+openapi: 3.0.1
+servers:
+  - url: https://api.agify.io
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: Estimated age for a given name
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ name, age, count ]
+                properties:
+                  name:
+                    type: string
+                  age:
+                    type: [ integer, 'null' ]
+                  count:
+                    type: integer

@@ -1,0 +1,31 @@
+# Matching request URL:
+# https://api.nationalize.io/?name=alex
+openapi: 3.0.1
+servers:
+  - url: https://api.nationalize.io
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: Nationality estimate for a given name
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ name, country, count ]
+                properties:
+                  name:
+                    type: string
+                  country:
+                    type: array
+                    items:
+                      type: object
+                      required: [ country_id, probability ]
+                      properties:
+                        country_id:
+                          type: string
+                        probability:
+                          type: number
+                  count:
+                    type: integer

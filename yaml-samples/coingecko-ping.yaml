@@ -1,0 +1,19 @@
+# Matching request URL:
+# https://api.coingecko.com/api/v3/ping
+openapi: 3.0.1
+servers:
+  - url: https://api.coingecko.com/api/v3
+paths:
+  /ping:
+    get:
+      responses:
+        '200':
+          description: CoinGecko API availability message
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ gecko_says ]
+                properties:
+                  gecko_says:
+                    type: string

@@ -1,0 +1,39 @@
+# Matching request URL:
+# https://api.open-meteo.com/v1/forecast?latitude=41.7151&longitude=44.8271&current=temperature_2m
+openapi: 3.0.1
+servers:
+  - url: https://api.open-meteo.com
+paths:
+  /v1/forecast:
+    get:
+      responses:
+        '200':
+          description: Current weather forecast for Tbilisi
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ latitude, longitude, timezone, current, current_units ]
+                properties:
+                  latitude:
+                    type: number
+                  longitude:
+                    type: number
+                  timezone:
+                    type: string
+                  current:
+                    type: object
+                    required: [ time, interval, temperature_2m ]
+                    properties:
+                      time:
+                        type: string
+                      interval:
+                        type: integer
+                      temperature_2m:
+                        type: number
+                  current_units:
+                    type: object
+                    required: [ temperature_2m ]
+                    properties:
+                      temperature_2m:
+                        type: string

@@ -1,0 +1,21 @@
+# Matching request URL:
+# https://catfact.ninja/fact
+openapi: 3.0.1
+servers:
+  - url: https://catfact.ninja
+paths:
+  /fact:
+    get:
+      responses:
+        '200':
+          description: Random cat fact
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ fact, length ]
+                properties:
+                  fact:
+                    type: string
+                  length:
+                    type: integer

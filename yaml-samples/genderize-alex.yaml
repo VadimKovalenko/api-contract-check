@@ -1,0 +1,25 @@
+# Matching request URL:
+# https://api.genderize.io/?name=alex
+openapi: 3.0.1
+servers:
+  - url: https://api.genderize.io
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: Gender estimate for a given name
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ name, gender, probability, count ]
+                properties:
+                  name:
+                    type: string
+                  gender:
+                    type: [ string, 'null' ]
+                  probability:
+                    type: number
+                  count:
+                    type: integer

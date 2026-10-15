@@ -1,0 +1,25 @@
+# Matching request URL:
+# https://jsonplaceholder.typicode.com/posts/1
+openapi: 3.0.1
+servers:
+  - url: https://jsonplaceholder.typicode.com
+paths:
+  /posts/{id}:
+    get:
+      responses:
+        '200':
+          description: Placeholder post
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ userId, id, title, body ]
+                properties:
+                  userId:
+                    type: integer
+                  id:
+                    type: integer
+                  title:
+                    type: string
+                  body:
+                    type: string

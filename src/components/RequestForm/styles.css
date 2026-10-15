@@ -112,10 +112,11 @@ input::placeholder { color: var(--color-text-placeholder); }
   border: 0;
 }
 
-.auth-title { display: flex; align-items: center; gap: 8px; padding: 0; }
+.auth-title { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; padding: 0; }
 .segmented { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
 .segmented label {
+  position: relative;
   min-height: 36px;
   display: grid;
   place-items: center;
@@ -142,7 +143,17 @@ input::placeholder { color: var(--color-text-placeholder); }
   box-shadow: 0 12px 26px var(--color-action-shadow);
 }
 
-.segmented input { position: absolute; opacity: 0; }
+.segmented input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  pointer-events: none;
+  white-space: nowrap;
+}
 .segmented label:has(input:focus-visible) { box-shadow: 0 0 0 3px var(--color-accent-focus-ring); }
 
 .format-button {

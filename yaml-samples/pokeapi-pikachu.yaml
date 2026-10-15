@@ -1,0 +1,49 @@
+# Matching request URL:
+# https://pokeapi.co/api/v2/pokemon/pikachu
+openapi: 3.0.1
+servers:
+  - url: https://pokeapi.co/api/v2
+paths:
+  /pokemon/{name}:
+    get:
+      responses:
+        '200':
+          description: Pokémon details
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ id, name, height, weight, species, types ]
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  height:
+                    type: integer
+                  weight:
+                    type: integer
+                  species:
+                    type: object
+                    required: [ name, url ]
+                    properties:
+                      name:
+                        type: string
+                      url:
+                        type: string
+                  types:
+                    type: array
+                    items:
+                      type: object
+                      required: [ slot, type ]
+                      properties:
+                        slot:
+                          type: integer
+                        type:
+                          type: object
+                          required: [ name, url ]
+                          properties:
+                            name:
+                              type: string
+                            url:
+                              type: string

@@ -1,0 +1,21 @@
+# Matching request URL:
+# https://dog.ceo/api/breeds/image/random
+openapi: 3.0.1
+servers:
+  - url: https://dog.ceo
+paths:
+  /api/breeds/image/random:
+    get:
+      responses:
+        '200':
+          description: Random dog image URL
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ message, status ]
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string

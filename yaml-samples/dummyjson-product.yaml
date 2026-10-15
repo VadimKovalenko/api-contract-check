@@ -1,0 +1,33 @@
+# Matching request URL:
+# https://dummyjson.com/products/1
+openapi: 3.0.1
+servers:
+  - url: https://dummyjson.com
+paths:
+  /products/{id}:
+    get:
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ id, title, description, category, price, rating, stock ]
+                properties:
+                  id:
+                    type: integer
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  category:
+                    type: string
+                  price:
+                    type: number
+                  rating:
+                    type: number
+                  stock:
+                    type: integer
+                  thumbnail:
+                    type: string

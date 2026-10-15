@@ -1,0 +1,29 @@
+# Matching request URL:
+# https://openlibrary.org/works/OL45883W.json
+openapi: 3.0.1
+servers:
+  - url: https://openlibrary.org
+paths:
+  /works/OL45883W.json:
+    get:
+      responses:
+        '200':
+          description: Open Library work record
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ key, type, revision ]
+                properties:
+                  key:
+                    type: string
+                  type:
+                    type: object
+                    required: [ key ]
+                    properties:
+                      key:
+                        type: string
+                  revision:
+                    type: integer
+                  latest_revision:
+                    type: integer
