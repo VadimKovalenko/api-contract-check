@@ -1,20 +1,23 @@
-import CodeMirror from '@uiw/react-codemirror';
-import { useState } from 'react';
+import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { useEffect, useRef, useState } from 'react';
 import { json } from '@codemirror/lang-json';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
 import { AlertTriangle, Check, ChevronDown, Copy, FileJson, Server } from 'lucide-react';
+import { highlightEditorField } from '../editorHighlight';
 import { ListBlock } from '../ListBlock';
 import { withUserAccessibilityThereStyle } from '../withUserAccessibilityThereStyle';
 import { resultLists } from './constants';
 import { useCoverageStyle, useValidationErrorItems } from './hooks';
-import type { CheckResult } from '../../types';
+import type { CheckResult, FieldHighlight, FieldHighlightTarget } from '../../types';
 import './styles.css';
 
 interface ResultsPanelProps {
   error: string;
+  onHighlightField: (path: string, target: FieldHighlightTarget) => void;
+  responseHighlight: FieldHighlight | null;
   result: CheckResult | null;
 }
 
@@ -93,12 +96,19 @@ function SchemaStatusPill({ className = '', valid }: SchemaStatusPillProps) {
 
 const AccessibleSchemaStatusPill = withUserAccessibilityThereStyle(SchemaStatusPill);
 
-export function ResultsPanel({ error, result }: ResultsPanelProps) {
+export function ResultsPanel({ error, onHighlightField, responseHighlight, result }: ResultsPanelProps) {
   const validationErrorItems = useValidationErrorItems(result);
   const coverageStyle = useCoverageStyle(result);
   const responsePreview = result ? JSON.stringify(result.responsePreview, null, 2) : '';
   const [copied, setCopied] = useState(false);
   const [jsonCollapsed, setJsonCollapsed] = useState(false);
+  const jsonEditorRef = useRef<ReactCodeMirrorRef | null>(null);
+
+  useEffect(() => {
+    if (responseHighlight && !jsonCollapsed) {
+      highlightEditorField(jsonEditorRef.current?.view, responseHighlight.path, 'json');
+    }
+  }, [jsonCollapsed, responseHighlight]);
 
   async function copyResponsePreview() {
     if (!responsePreview) {
@@ -108,6 +118,14 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
     await navigator.clipboard.writeText(responsePreview);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1400);
+  }
+
+  function handleFieldHighlight(path: string, target: FieldHighlightTarget) {
+    if (target === 'response') {
+      setJsonCollapsed(false);
+    }
+
+    onHighlightField(path, target);
   }
 
   return (
@@ -146,8 +164,13 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
             <AccessibleListBlock
               emptyText={emptyText}
               infoText={infoText}
+              itemActionTarget={key === 'unlistedFields' || key === 'presentFields' ? 'the JSON response' : 'the YAML schema'}
               items={result[key]}
               key={key}
+              onItemClick={(path) => handleFieldHighlight(
+                path,
+                key === 'unlistedFields' || key === 'presentFields' ? 'response' : 'schema',
+              )}
               title={title}
               tone={tone}
             />
@@ -194,6 +217,7 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
                 theme="none"
                 value={responsePreview}
                 id="response-preview"
+                ref={jsonEditorRef}
               />
             ) : null}
             <p aria-live="polite" className="sr-only">{copied ? 'Response JSON copied to clipboard.' : ''}</p>

@@ -4,6 +4,11 @@ import type { LucideProps } from 'lucide-react';
 export type AuthType = 'none' | 'bearer' | 'cookie' | 'custom';
 export type HealthTone = 'neutral' | 'good' | 'warn' | 'bad';
 export type Tone = HealthTone | 'cool' | 'present' | 'missing' | 'optional' | 'unlisted';
+export type FieldHighlightTarget = 'response' | 'schema';
+
+export interface FieldHighlight {
+  path: string;
+}
 
 export interface CheckFormState {
   url: string;

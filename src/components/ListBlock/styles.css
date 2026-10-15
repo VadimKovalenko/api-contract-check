@@ -96,7 +96,8 @@
 
 .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; list-style: none; }
 
-.chip-list li {
+.chip-list li,
+.chip-list li button {
   height: 28px;
   display: inline-grid;
   place-items: center;
@@ -110,6 +111,20 @@
   font-weight: 720;
   line-height: 1;
   vertical-align: middle;
+}
+
+.chip-list li button {
+  height: 100%;
+  color: inherit;
+  background: var(--color-transparent);
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.chip-list li:has(button:focus-visible) {
+  outline: 3px solid var(--color-accent-focus-ring);
+  outline-offset: 2px;
 }
 
 .chip-list.missing li {

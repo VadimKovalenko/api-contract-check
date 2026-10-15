@@ -11,6 +11,8 @@ interface ListBlockProps {
   items?: string[];
   emptyText: string;
   infoText?: string;
+  onItemClick?: (item: string) => void;
+  itemActionTarget?: string;
   tone?: Tone;
 }
 
@@ -26,7 +28,7 @@ const toneIcons = {
   warn: CircleAlert,
 } satisfies Record<Tone, typeof CircleCheck>;
 
-export function ListBlock({ className = '', title, items, emptyText, infoText, tone = defaultTone }: ListBlockProps) {
+export function ListBlock({ className = '', title, items, emptyText, infoText, itemActionTarget, onItemClick, tone = defaultTone }: ListBlockProps) {
   const { hasItems, items: normalizedItems } = useListItems(items);
   const infoTipId = useId();
   const titleId = useId();
@@ -57,7 +59,15 @@ export function ListBlock({ className = '', title, items, emptyText, infoText, t
         <p className="muted">{emptyText}</p>
       ) : (
         <ul className={`chip-list ${tone}`}>
-          {normalizedItems.map((item) => <li key={item}>{item}</li>)}
+          {normalizedItems.map((item) => (
+            <li key={item}>
+              {onItemClick ? (
+                <button aria-label={`Show ${item} in ${itemActionTarget ?? 'the related editor'}`} onClick={() => onItemClick(item)} type="button">
+                  {item}
+                </button>
+              ) : item}
+            </li>
+          ))}
         </ul>
       )}
     </section>

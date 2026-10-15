@@ -1,17 +1,19 @@
 import type { FormEvent } from 'react';
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { yaml } from '@codemirror/lang-yaml';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorView } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
 import { Check, Copy, Info, KeyRound, Save, Sparkles } from 'lucide-react';
+import { highlightEditorField } from '../editorHighlight';
 import { deriveExampleUrlFromOpenApi, formatYamlSpec, useAuthTypes } from './hooks';
-import type { CheckFormState, RunCheck, UpdateFormField } from '../../types';
+import type { CheckFormState, FieldHighlight, RunCheck, UpdateFormField } from '../../types';
 import './styles.css';
 
 interface RequestFormProps {
   form: CheckFormState;
+  highlightRequest: FieldHighlight | null;
   onRunCheck: RunCheck;
   onSaveCurrentYaml: () => void;
   onUpdateField: UpdateFormField;
@@ -75,7 +77,7 @@ const yamlEditorTheme = EditorView.theme({
 const yamlEditorExtensions = [yaml(), syntaxHighlighting(yamlHighlightStyle), yamlEditorTheme, EditorView.lineWrapping];
 const yamlHelperText = 'Pasted specs only work when the Endpoint URL matches the documented server and path. If validation says required root fields are missing, compare Response Preview top-level keys with the schema required fields.';
 
-export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField }: RequestFormProps) {
+export function RequestForm({ form, highlightRequest, onRunCheck, onSaveCurrentYaml, onUpdateField }: RequestFormProps) {
   const authTypes = useAuthTypes();
   const yamlTipId = useId();
   const yamlLabelId = useId();
@@ -83,6 +85,12 @@ export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField
   const yamlEditorRef = useRef<ReactCodeMirrorRef | null>(null);
   const [copied, setCopied] = useState(false);
   const [formatError, setFormatError] = useState('');
+
+  useEffect(() => {
+    if (highlightRequest) {
+      highlightEditorField(yamlEditorRef.current?.view, highlightRequest.path, 'yaml');
+    }
+  }, [highlightRequest]);
 
   function updateYamlSpec(value: string) {
     setFormatError('');

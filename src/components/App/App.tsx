@@ -16,7 +16,7 @@ import {
   useThemeController,
   useWorkspaceResize,
 } from './hooks';
-import type { SavedYaml, StyleVars } from '../../types';
+import type { FieldHighlight, FieldHighlightTarget, SavedYaml, StyleVars } from '../../types';
 import './styles.css';
 
 const navItems: ReadonlyArray<{ end?: boolean; label: string; to: string }> = [
@@ -42,6 +42,8 @@ export function App() {
   const [privacyVisible, setPrivacyVisible] = useState(true);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [saveTitle, setSaveTitle] = useState('');
+  const [responseHighlight, setResponseHighlight] = useState<FieldHighlight | null>(null);
+  const [schemaHighlight, setSchemaHighlight] = useState<FieldHighlight | null>(null);
   const privacyModal = useModalAccessibility(privacyOpen, () => setPrivacyOpen(false));
   const saveYamlModal = useModalAccessibility(saveDialogOpen, () => setSaveDialogOpen(false));
   const location = useLocation();
@@ -126,6 +128,16 @@ export function App() {
   function useSavedYaml(savedYaml: SavedYaml) {
     applySavedYaml(savedYaml);
     navigate('/');
+  }
+
+  function highlightField(path: string, target: FieldHighlightTarget) {
+    const highlight: FieldHighlight = { path };
+
+    if (target === 'schema') {
+      setSchemaHighlight(highlight);
+    } else {
+      setResponseHighlight(highlight);
+    }
   }
 
   const modalLayer = (
@@ -354,6 +366,7 @@ export function App() {
               >
                 <RequestForm
                   form={form}
+                  highlightRequest={schemaHighlight}
                   onRunCheck={runCheck}
                   onSaveCurrentYaml={openSaveDialog}
                   onUpdateField={updateField}
@@ -370,7 +383,12 @@ export function App() {
                   role="separator"
                   type="button"
                 />
-                <ResultsPanel error={error} result={result} />
+                <ResultsPanel
+                  error={error}
+                  onHighlightField={highlightField}
+                  responseHighlight={responseHighlight}
+                  result={result}
+                />
               </section>
             </>
           )}
