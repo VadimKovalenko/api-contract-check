@@ -94,9 +94,9 @@
   transform: translateX(-50%) translateY(0);
 }
 
-.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; list-style: none; }
 
-.chip-list span {
+.chip-list li {
   height: 28px;
   display: inline-grid;
   place-items: center;
@@ -112,37 +112,37 @@
   vertical-align: middle;
 }
 
-.chip-list.missing span {
+.chip-list.missing li {
   color: var(--color-danger-text-soft);
   background:
     linear-gradient(var(--color-danger-bg), var(--color-danger-bg)) padding-box,
     linear-gradient(135deg, var(--color-danger-hot), var(--color-danger-border)) border-box;
 }
 
-.chip-list.optional span {
+.chip-list.optional li {
   color: var(--color-warning-text);
   background:
     linear-gradient(var(--color-warning-bg), var(--color-warning-bg)) padding-box,
     linear-gradient(135deg, var(--color-warning), var(--color-warning-warm)) border-box;
 }
 
-.chip-list.unlisted span {
+.chip-list.unlisted li {
   color: var(--color-orange-text);
   background:
     linear-gradient(var(--color-orange-bg), var(--color-orange-bg)) padding-box,
     linear-gradient(135deg, var(--color-orange-border), var(--color-danger-hot)) border-box;
 }
 
-.chip-list.present span {
+.chip-list.present li {
   color: var(--color-success-text);
   background:
     linear-gradient(var(--color-success-bg), var(--color-success-bg)) padding-box,
     linear-gradient(135deg, var(--color-success), var(--color-accent)) border-box;
 }
 
-.user-accessibility-theme-style .chip-list.optional span,
-.user-accessibility-theme-style .chip-list.unlisted span,
-.user-accessibility-theme-style .chip-list.present span {
+.user-accessibility-theme-style .chip-list.optional li,
+.user-accessibility-theme-style .chip-list.unlisted li,
+.user-accessibility-theme-style .chip-list.present li {
   color: var(--color-badge-accessible-text);
 }
 

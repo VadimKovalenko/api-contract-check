@@ -111,17 +111,17 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
   }
 
   return (
-    <section className="panel results-panel">
+    <section aria-labelledby="results-panel-title" className="panel results-panel">
       <div className="panel-heading">
         <div>
           <p className="eyebrow">Results</p>
-          <h2>Contract evidence</h2>
+          <h2 id="results-panel-title">Contract evidence</h2>
         </div>
         {result && <AccessibleSchemaStatusPill valid={result.valid} />}
       </div>
 
       {error && (
-        <div className="alert"><AlertTriangle size={18} /> {error}</div>
+        <div className="alert" role="alert"><AlertTriangle aria-hidden="true" size={18} /> {error}</div>
       )}
 
       {!result && !error && (
@@ -133,12 +133,13 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
 
       {result && (
         <div className="result-stack">
+          <p aria-live="polite" className="sr-only">Schema check complete. {result.valid ? 'The schema passed.' : 'The schema failed.'}</p>
           <div className="coverage-band">
             <div>
               <span>Documented fields present</span>
               <strong>{result.presentFieldCount}/{result.documentedFieldCount}</strong>
             </div>
-            <div className="meter"><span style={coverageStyle} /></div>
+            <div aria-label="Documented fields present" aria-valuemax={result.documentedFieldCount} aria-valuemin={0} aria-valuenow={result.presentFieldCount} className="meter" role="progressbar"><span style={coverageStyle} /></div>
           </div>
 
           {resultLists.map(({ emptyText, infoText, key, title, tone }) => (
@@ -173,6 +174,7 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
                   {copied ? 'Copied' : 'Copy'}
                 </button>
                 <button
+                  aria-controls="response-preview"
                   aria-expanded={!jsonCollapsed}
                   aria-label={jsonCollapsed ? 'Expand response JSON' : 'Collapse response JSON'}
                   className="preview-action-button"
@@ -191,8 +193,10 @@ export function ResultsPanel({ error, result }: ResultsPanelProps) {
                 extensions={jsonPreviewExtensions}
                 theme="none"
                 value={responsePreview}
+                id="response-preview"
               />
             ) : null}
+            <p aria-live="polite" className="sr-only">{copied ? 'Response JSON copied to clipboard.' : ''}</p>
           </div>
         </div>
       )}

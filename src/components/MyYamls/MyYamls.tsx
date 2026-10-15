@@ -5,8 +5,10 @@ import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
 import { type FormEvent, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Check, ChevronDown, Copy, FileCode2, Play, Trash2, X } from 'lucide-react';
 import { deriveExampleUrlFromOpenApi } from '../RequestForm/hooks';
+import { useModalAccessibility } from '../useModalAccessibility';
 import type { SavedYaml } from '../../types';
 import './styles.css';
 
@@ -75,6 +77,7 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [yamlSpec, setYamlSpec] = useState('');
+  const deleteModal = useModalAccessibility(Boolean(deleteTarget), () => setDeleteTarget(null));
 
   async function copyYaml(savedYaml: SavedYaml) {
     await navigator.clipboard.writeText(savedYaml.yamlSpec);
@@ -128,7 +131,7 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
   }
 
   return (
-    <section className="yamls-page" aria-labelledby="my-yamls-title">
+    <section aria-hidden={Boolean(deleteTarget)} className="yamls-page" aria-labelledby="my-yamls-title" inert={Boolean(deleteTarget)}>
       <div className="yamls-heading">
         <div>
           <p className="eyebrow">Library</p>
@@ -148,6 +151,7 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
           <label className="field">
             <span>Name</span>
             <input
+              autoComplete="off"
               onChange={(event) => setTitle(event.target.value)}
               placeholder="User profile schema"
               value={title}
@@ -156,9 +160,13 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
           <label className="field">
             <span>Request URL</span>
             <input
+              autoComplete="off"
+              inputMode="url"
               onChange={(event) => setUrl(event.target.value)}
               placeholder="https://api.example.com/resource"
               required
+              spellCheck={false}
+              type="url"
               value={url}
             />
           </label>
@@ -166,6 +174,7 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
         <label className="field">
           <span>YAML schema</span>
           <textarea
+            autoComplete="off"
             className="yaml-create-textarea"
             onChange={(event) => updateYamlSpec(event.target.value)}
             placeholder="openapi: 3.0.1"
@@ -205,6 +214,7 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
                     {copiedId === savedYaml.id ? 'Copied' : 'Copy'}
                   </button>
                   <button
+                    aria-controls={`yaml-preview-${savedYaml.id}`}
                     aria-expanded={!collapsedIds.has(savedYaml.id)}
                     aria-label={collapsedIds.has(savedYaml.id) ? `Expand ${savedYaml.title} YAML` : `Collapse ${savedYaml.title} YAML`}
                     className="preview-action-button"
@@ -224,7 +234,10 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
                   <button
                     aria-label={`Remove ${savedYaml.title}`}
                     className="preview-action-button danger"
-                    onClick={() => setDeleteTarget(savedYaml)}
+                    onClick={() => {
+                      deleteModal.rememberOpener();
+                      setDeleteTarget(savedYaml);
+                    }}
                     type="button"
                   >
                     <Trash2 size={14} />
@@ -244,6 +257,7 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
                   extensions={yamlCardExtensions}
                   theme="none"
                   value={savedYaml.yamlSpec}
+                  id={`yaml-preview-${savedYaml.id}`}
                 />
               ) : null}
             </article>
@@ -251,13 +265,16 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
         </div>
       )}
 
-      {deleteTarget ? (
+      {deleteTarget ? createPortal(
         <div className="confirm-backdrop" role="presentation">
           <section
+            aria-describedby="confirm-delete-description"
             aria-labelledby="confirm-delete-title"
             aria-modal="true"
             className="confirm-dialog"
+            data-accessible-modal
             role="dialog"
+            tabIndex={-1}
           >
             <div className="confirm-heading">
               <div>
@@ -267,13 +284,14 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
               <button
                 aria-label="Cancel removal"
                 className="privacy-icon-button"
+                data-dialog-initial-focus
                 onClick={() => setDeleteTarget(null)}
                 type="button"
               >
                 <X size={18} />
               </button>
             </div>
-            <p>
+            <p id="confirm-delete-description">
               This removes the saved request and YAML schema from this browser.
             </p>
             <div className="confirm-actions">
@@ -287,7 +305,7 @@ export function MyYamls({ onCreateYaml, onRemoveYaml, onUseYaml, savedYamls }: M
             </div>
           </section>
         </div>
-      ) : null}
+      , document.body) : null}
     </section>
   );
 }

@@ -29,15 +29,16 @@ const toneIcons = {
 export function ListBlock({ className = '', title, items, emptyText, infoText, tone = defaultTone }: ListBlockProps) {
   const { hasItems, items: normalizedItems } = useListItems(items);
   const infoTipId = useId();
+  const titleId = useId();
   const Icon = toneIcons[tone];
 
   return (
-    <div className={`list-block ${tone} ${className}`}>
+    <section aria-labelledby={titleId} className={`list-block ${tone} ${className}`}>
       <div className="list-block-heading">
         <span className="list-block-icon" aria-hidden="true">
           <Icon size={16} />
         </span>
-        <h3>{title}</h3>
+        <h3 id={titleId}>{title}</h3>
         {infoText ? (
           <span className="info-tip">
             <button
@@ -55,10 +56,10 @@ export function ListBlock({ className = '', title, items, emptyText, infoText, t
       {!hasItems ? (
         <p className="muted">{emptyText}</p>
       ) : (
-        <div className={`chip-list ${tone}`}>
-          {normalizedItems.map((item) => <span key={item}>{item}</span>)}
-        </div>
+        <ul className={`chip-list ${tone}`}>
+          {normalizedItems.map((item) => <li key={item}>{item}</li>)}
+        </ul>
       )}
-    </div>
+    </section>
   );
 }

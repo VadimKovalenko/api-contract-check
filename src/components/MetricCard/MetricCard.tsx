@@ -21,11 +21,11 @@ export function MetricCard({ icon, label, value, tone = defaultTone, meter, mete
   return (
     <article className={`metric-card ${tone}`}>
       {showRingMeter ? (
-        <div className="metric-ring" style={meterStyle} aria-label={`${label}: ${value}`}>
+        <div aria-label={`${label}: ${displayValue}`} className="metric-ring" role="img" style={meterStyle}>
           <span>{displayValue}</span>
         </div>
       ) : (
-        <div className="metric-icon">{icon}</div>
+        <div aria-hidden="true" className="metric-icon">{icon}</div>
       )}
       <div>
         <span>{label}</span>

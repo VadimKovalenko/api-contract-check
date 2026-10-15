@@ -78,6 +78,8 @@ const yamlHelperText = 'Pasted specs only work when the Endpoint URL matches the
 export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField }: RequestFormProps) {
   const authTypes = useAuthTypes();
   const yamlTipId = useId();
+  const yamlLabelId = useId();
+  const formatStatusId = useId();
   const yamlEditorRef = useRef<ReactCodeMirrorRef | null>(null);
   const [copied, setCopied] = useState(false);
   const [formatError, setFormatError] = useState('');
@@ -131,11 +133,11 @@ export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField
   }
 
   return (
-    <form className="panel input-panel" onSubmit={handleSubmit}>
+    <form aria-labelledby="request-form-title" className="panel input-panel" onSubmit={handleSubmit}>
       <div className="panel-heading">
         <div>
           <p className="eyebrow">Request</p>
-          <h2>Endpoint URL</h2>
+          <h2 id="request-form-title">Endpoint URL</h2>
         </div>
         <span className="method-pill">GET</span>
       </div>
@@ -143,43 +145,60 @@ export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField
       <label className="field">
         <span>Endpoint URL</span>
         <input
+          autoComplete="off"
+          inputMode="url"
+          name="endpoint-url"
+          required
+          spellCheck={false}
+          type="url"
           value={form.url}
           onChange={(event) => onUpdateField('url', event.target.value)}
           placeholder="https://api.example.com/users/1"
         />
       </label>
 
-      <div className="auth-box">
-        <div className="auth-title"><KeyRound size={16} /> Authentication</div>
+      <fieldset className="auth-box">
+        <legend className="auth-title"><KeyRound aria-hidden="true" size={16} /> Authentication</legend>
         <div className="segmented">
           {authTypes.map((type) => (
-            <button
+            <label
               key={type}
-              type="button"
               className={form.authType === type ? 'active' : ''}
-              onClick={() => onUpdateField('authType', type)}
             >
-              {type}
-            </button>
+              <input
+                checked={form.authType === type}
+                name="authentication-type"
+                onChange={() => onUpdateField('authType', type)}
+                type="radio"
+                value={type}
+              />
+              <span>{type}</span>
+            </label>
           ))}
         </div>
         {form.authType === 'bearer' && (
-          <input value={form.token} onChange={(event) => onUpdateField('token', event.target.value)} placeholder="Bearer token" />
+          <label className="field">
+            <span>Bearer token</span>
+            <input autoComplete="off" name="bearer-token" onChange={(event) => onUpdateField('token', event.target.value)} placeholder="Bearer token" spellCheck={false} type="password" value={form.token} />
+          </label>
         )}
         {form.authType === 'cookie' && (
-          <input value={form.cookie} onChange={(event) => onUpdateField('cookie', event.target.value)} placeholder="session=abc123" />
+          <label className="field">
+            <span>Cookie value</span>
+            <input autoComplete="off" name="cookie-value" onChange={(event) => onUpdateField('cookie', event.target.value)} placeholder="session=abc123" spellCheck={false} type="password" value={form.cookie} />
+          </label>
         )}
         {form.authType === 'custom' && (
           <div className="two-col">
-            <input value={form.headerName} onChange={(event) => onUpdateField('headerName', event.target.value)} placeholder="Header name" />
-            <input value={form.headerValue} onChange={(event) => onUpdateField('headerValue', event.target.value)} placeholder="Header value" />
+            <label className="field"><span>Header name</span><input autoComplete="off" name="header-name" onChange={(event) => onUpdateField('headerName', event.target.value)} placeholder="Header name" spellCheck={false} value={form.headerName} /></label>
+            <label className="field"><span>Header value</span><input autoComplete="off" name="header-value" onChange={(event) => onUpdateField('headerValue', event.target.value)} placeholder="Header value" spellCheck={false} type="password" value={form.headerValue} /></label>
           </div>
         )}
-      </div>
+      </fieldset>
 
       <div className="field grow-field">
         <div className="field-header">
-          <span className="yaml-title">
+          <span className="yaml-title" id={yamlLabelId}>
             OpenAPI subset YAML
             <span className="info-tip">
               <button
@@ -209,6 +228,8 @@ export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField
           </div>
         </div>
         <CodeMirror
+          aria-describedby={`${yamlTipId} ${formatStatusId}`}
+          aria-label="OpenAPI subset YAML"
           ref={yamlEditorRef}
           className="yaml-editor"
           value={form.yamlSpec}
@@ -224,7 +245,7 @@ export function RequestForm({ form, onRunCheck, onSaveCurrentYaml, onUpdateField
           onChange={updateYamlSpec}
           theme="none"
         />
-        {formatError && <p className="format-error">{formatError}</p>}
+        <p aria-live="polite" className={formatError ? 'format-error' : 'sr-only'} id={formatStatusId} role={formatError ? 'alert' : undefined}>{formatError || (copied ? 'YAML copied to clipboard.' : '')}</p>
       </div>
     </form>
   );

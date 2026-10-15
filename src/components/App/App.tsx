@@ -6,6 +6,7 @@ import { MetricCard } from '../MetricCard';
 import { MyYamls } from '../MyYamls';
 import { RequestForm } from '../RequestForm';
 import { ResultsPanel } from '../ResultsPanel';
+import { useModalAccessibility } from '../useModalAccessibility';
 import { vantaFogColors } from '../../colors';
 import { metricCards } from './constants';
 import {
@@ -18,10 +19,10 @@ import {
 import type { SavedYaml, StyleVars } from '../../types';
 import './styles.css';
 
-const navItems = [
+const navItems: ReadonlyArray<{ end?: boolean; label: string; to: string }> = [
   { end: true, label: 'Check', to: '/' },
   { label: 'My Yamls', to: '/yamls' },
-] as const;
+];
 
 export function App() {
   const { applySavedYaml, error, form, health, loading, result, runCheck, updateField } = useSchemaCheck();
@@ -41,6 +42,8 @@ export function App() {
   const [privacyVisible, setPrivacyVisible] = useState(true);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [saveTitle, setSaveTitle] = useState('');
+  const privacyModal = useModalAccessibility(privacyOpen, () => setPrivacyOpen(false));
+  const saveYamlModal = useModalAccessibility(saveDialogOpen, () => setSaveDialogOpen(false));
   const location = useLocation();
   const navigate = useNavigate();
   const activeNavIndex = Math.max(
@@ -98,6 +101,16 @@ export function App() {
     setPrivacyVisible(false);
   }
 
+  function openPrivacyNotice() {
+    privacyModal.rememberOpener();
+    setPrivacyOpen(true);
+  }
+
+  function openSaveDialog() {
+    saveYamlModal.rememberOpener();
+    setSaveDialogOpen(true);
+  }
+
   function saveCurrentYaml(event: FormEvent) {
     event.preventDefault();
     createSavedYaml({
@@ -120,10 +133,13 @@ export function App() {
       {privacyOpen ? (
         <div className="privacy-modal-backdrop" role="presentation">
           <section
+            aria-describedby="privacy-modal-description"
             aria-labelledby="privacy-modal-title"
             aria-modal="true"
             className="privacy-modal"
+            data-accessible-modal
             role="dialog"
+            tabIndex={-1}
           >
             <div className="privacy-modal-heading">
               <div>
@@ -133,6 +149,7 @@ export function App() {
               <button
                 aria-label="Close privacy notice"
                 className="privacy-icon-button"
+                data-dialog-initial-focus
                 onClick={() => setPrivacyOpen(false)}
                 type="button"
               >
@@ -140,7 +157,7 @@ export function App() {
               </button>
             </div>
             <div className="privacy-modal-body">
-              <p>
+              <p id="privacy-modal-description">
                 This app is designed for endpoint schema checks. It does not intentionally collect,
                 store, or log sensitive request data, authorization values, cookies, or response
                 payloads.
@@ -170,11 +187,14 @@ export function App() {
       {saveDialogOpen ? (
         <div className="privacy-modal-backdrop" role="presentation">
           <form
+            aria-describedby="save-yaml-description"
             aria-labelledby="save-yaml-title"
             aria-modal="true"
             className="privacy-modal save-yaml-modal"
             onSubmit={saveCurrentYaml}
+            data-accessible-modal
             role="dialog"
+            tabIndex={-1}
           >
             <div className="privacy-modal-heading">
               <div>
@@ -194,11 +214,14 @@ export function App() {
               <span>Name</span>
               <input
                 autoFocus
+                data-dialog-initial-focus
                 onChange={(event) => setSaveTitle(event.target.value)}
                 placeholder="User profile schema"
+                aria-describedby="save-yaml-description"
                 value={saveTitle}
               />
             </label>
+            <p className="sr-only" id="save-yaml-description">Choose a name for the current request and YAML schema.</p>
             <div className="save-yaml-preview">
               <span>Request</span>
               <code>{form.url}</code>
@@ -220,7 +243,7 @@ export function App() {
 
   return (
     <>
-      <main className="app-shell" data-theme={theme} style={themeStyle}>
+      <main aria-hidden={privacyOpen || saveDialogOpen} className="app-shell" data-theme={theme} inert={privacyOpen || saveDialogOpen} style={themeStyle}>
         <div className="background-fog" ref={fogRef} aria-hidden="true" />
         {privacyVisible ? (
           <section className="privacy-banner" aria-label="Privacy notice">
@@ -232,7 +255,7 @@ export function App() {
               </p>
             </div>
             <div className="privacy-banner-actions">
-              <button className="privacy-link-button" onClick={() => setPrivacyOpen(true)} type="button">
+              <button className="privacy-link-button" onClick={openPrivacyNotice} type="button">
                 Details
               </button>
               <button
@@ -270,7 +293,7 @@ export function App() {
         <div className="nav-actions">
           <button
             aria-checked={isLightTheme}
-            aria-label="Switch light theme"
+            aria-label={isLightTheme ? 'Switch to dark theme' : 'Switch to light theme'}
             className="theme-toggle"
             onClick={toggleTheme}
             role="switch"
@@ -332,7 +355,7 @@ export function App() {
                 <RequestForm
                   form={form}
                   onRunCheck={runCheck}
-                  onSaveCurrentYaml={() => setSaveDialogOpen(true)}
+                  onSaveCurrentYaml={openSaveDialog}
                   onUpdateField={updateField}
                 />
                 <button

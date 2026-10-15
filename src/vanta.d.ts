@@ -1,3 +1,5 @@
+declare module 'three';
+
 declare module 'vanta/dist/vanta.fog.min' {
   import type * as THREE from 'three';
 
