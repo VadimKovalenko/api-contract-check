@@ -17,7 +17,6 @@ interface RequestFormProps {
   onRunCheck: RunCheck;
   onSaveCurrentYaml: () => void;
   onUpdateField: UpdateFormField;
-  recentUrls: string[];
 }
 
 function getErrorMessage(error: unknown) {
@@ -78,9 +77,14 @@ const yamlEditorTheme = EditorView.theme({
 const yamlEditorExtensions = [yaml(), syntaxHighlighting(yamlHighlightStyle), yamlEditorTheme, EditorView.lineWrapping];
 const yamlHelperText = 'Pasted specs only work when the Endpoint URL matches the documented server and path. If validation says required root fields are missing, compare Response Preview top-level keys with the schema required fields.';
 
-export function RequestForm({ form, highlightRequest, onRunCheck, onSaveCurrentYaml, onUpdateField, recentUrls }: RequestFormProps) {
+export function RequestForm({
+  form,
+  highlightRequest,
+  onRunCheck,
+  onSaveCurrentYaml,
+  onUpdateField,
+}: RequestFormProps) {
   const authTypes = useAuthTypes();
-  const recentUrlsId = useId();
   const yamlTipId = useId();
   const yamlLabelId = useId();
   const formatStatusId = useId();
@@ -138,7 +142,7 @@ export function RequestForm({ form, highlightRequest, onRunCheck, onSaveCurrentY
   }
 
   return (
-    <form aria-labelledby="request-form-title" className="panel input-panel" onSubmit={handleSubmit}>
+    <form aria-labelledby="request-form-title" className="panel input-panel" id="request-form" onSubmit={handleSubmit}>
       <div className="panel-heading">
         <div>
           <p className="eyebrow">Request</p>
@@ -147,24 +151,21 @@ export function RequestForm({ form, highlightRequest, onRunCheck, onSaveCurrentY
         <span className="method-pill">GET</span>
       </div>
 
-      <label className="field">
+      <label className="field" htmlFor="endpoint-url">
         <span>Endpoint URL</span>
         <input
           autoComplete="url"
+          id="endpoint-url"
           inputMode="url"
           name="url"
           required
           spellCheck={false}
           type="url"
           value={form.url}
-          list={recentUrlsId}
           onChange={(event) => onUpdateField('url', event.target.value)}
           placeholder="https://api.example.com/users/1"
         />
       </label>
-      <datalist id={recentUrlsId}>
-        {recentUrls.map((url) => <option key={url} value={url} />)}
-      </datalist>
 
       <fieldset className="auth-box">
         <legend className="auth-title"><KeyRound aria-hidden="true" size={16} /> Authentication</legend>

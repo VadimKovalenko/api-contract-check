@@ -13,8 +13,8 @@ Current measured snapshot:
 | Tracked project text lines | 11,543 | Excludes `node_modules/`, `dist/`, `dist-server/`, `.git`, and binary PNG assets; includes this file. |
 | Tests | 18 pass / 0 fail | Measured with `npm test` on `2026-10-14`. |
 | Test duration | 522.051954ms | Reported by Node test runner. |
-| Build duration | 3.02s | Vite-reported client build duration on `2026-10-14`; server TypeScript compile also completed. |
-| Lint result | pass | Measured with `npm run lint` on `2026-10-14`. |
+| Build duration | 2.76s | Vite-reported client build duration on `2026-10-15`; server TypeScript compile also completed. |
+| Lint result | pass | Measured with `npm run lint` on `2026-10-15`. |
 | First project file birth | 2026-09-20 15:28:19 +0400 | Historical root `index.js`, removed during TypeScript migration. |
 | Last pre-metrics app artifact | 2026-09-21 15:17:48 +0400 | `dist/` build artifacts. |
 | Metrics tracker created | 2026-09-22 09:37:05 +0400 | `METRICS.md`. |
@@ -35,7 +35,8 @@ User-reported usage on `2026-10-12`: 9% remained in a 258,000-token window, or a
 | 2026-10-11 | response-coverage-ui | Codex | Add required/optional/unlisted response field reporting, YAML/JSON highlighting, light theme switcher, info tooltips, scrollbar polish, and UI consistency fixes | ~190,000 | ~34,000 | ~224,000 | n/a | n/a | ~1h 10m | ~3h active | pass | Token and thinking-time values are estimates; cache telemetry unavailable. `npm run lint`, `npm run build`, and `npm test` passed on `2026-10-11`. |
 | 2026-10-12 | vanta-fog-light-default | Codex | Integrate and tune animated Vanta fog, remove obsolete fog CSS overrides, and set light theme as the default | ~12,000 | ~2,000 | ~14,000 | n/a | n/a | ~8m | ~20m | pass | Token, thinking-time, and wall-time values are estimates; cache telemetry unavailable. `npm run lint` and `npm run build` passed; build duration measured at 2.91s. No tests were run. |
 | 2026-10-14 | editor-ui-yaml-sample-flow | Codex | Polish editor/search UI, nav and action controls, privacy modal placement, saved YAML workflow, OpenAPI URL derivation, and Wikimedia sample tests | ~175,000 | ~31,000 | ~206,000 | n/a | n/a | ~1h 20m | ~3h active | pass | Token, thinking-time, and wall-time values are estimates; cache telemetry unavailable. `npm test`, `npm run lint`, and `npm run build` passed on `2026-10-14`; committed as `465c3b2`. |
-| 2026-09-20..2026-10-14 | **Total aggregation** | Codex | Vibe-coded project baseline through latest metrics update | ~731,000 | ~127,700 | ~858,700 | n/a | n/a | ~5h 28m | ~11h 35m active / ~24d elapsed | pass | Manual sum of raw run-log rows above, including the `2026-10-14` editor UI and YAML sample flow session; elapsed range starts at `index.js` creation and ends after this metrics update. |
+| 2026-10-15 | request-workflow-accessibility | Codex | Refine request controls and YAML editor accessibility, add public API YAML samples, and replace app-managed URL suggestions with browser-native form-history eligibility | ~64,000 | ~9,000 | ~73,000 | n/a | n/a | ~28m | ~1h 20m active | pass | Token, thinking-time, and wall-time values are estimates; cache telemetry unavailable. `npm run lint` and `npm run build` passed on `2026-10-15`; Vite-reported build duration was 2.76s. No tests were run for the final UI-only change. |
+| 2026-09-20..2026-10-15 | **Total aggregation** | Codex | Vibe-coded project baseline through latest metrics update | ~795,000 | ~136,700 | ~931,700 | n/a | n/a | ~5h 56m | ~12h 55m active / ~25d elapsed | pass | Manual sum of all run-log rows above, including the `2026-10-15` request workflow and accessibility session; elapsed range starts at `index.js` creation and ends after this metrics update. |
 
 ## Metrics Dictionary
 

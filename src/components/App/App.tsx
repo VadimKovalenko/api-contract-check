@@ -43,12 +43,12 @@ export function App() {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [saveTitle, setSaveTitle] = useState('');
   const [responseHighlight, setResponseHighlight] = useState<FieldHighlight | null>(null);
-  const [recentUrls, setRecentUrls] = useState<string[]>([]);
   const [schemaHighlight, setSchemaHighlight] = useState<FieldHighlight | null>(null);
   const privacyModal = useModalAccessibility(privacyOpen, () => setPrivacyOpen(false));
   const saveYamlModal = useModalAccessibility(saveDialogOpen, () => setSaveDialogOpen(false));
   const location = useLocation();
   const navigate = useNavigate();
+  const isCheckPage = location.pathname === '/';
   const activeNavIndex = Math.max(
     0,
     navItems.findIndex((item) => (item.to === '/' ? location.pathname === '/' : location.pathname.startsWith(item.to))),
@@ -139,16 +139,6 @@ export function App() {
     } else {
       setResponseHighlight(highlight);
     }
-  }
-
-  async function runCheckAndRemember(event?: FormEvent) {
-    const endpointUrl = form.url.trim();
-
-    if (endpointUrl) {
-      setRecentUrls((current) => [endpointUrl, ...current.filter((url) => url !== endpointUrl)].slice(0, 8));
-    }
-
-    await runCheck(event);
   }
 
   const modalLayer = (
@@ -332,7 +322,13 @@ export function App() {
               <span className="theme-toggle-thumb" />
             </span>
           </button>
-          <button className="run-button" onClick={() => void runCheckAndRemember()} disabled={loading} type="button">
+          <button
+            className="run-button"
+            disabled={loading}
+            form={isCheckPage ? 'request-form' : undefined}
+            onClick={isCheckPage ? undefined : () => void runCheck()}
+            type={isCheckPage ? 'submit' : 'button'}
+          >
             {loading ? <Loader2 className="spin" size={18} /> : <Play size={18} />}
             <span>Run Check</span>
           </button>
@@ -378,10 +374,9 @@ export function App() {
                 <RequestForm
                   form={form}
                   highlightRequest={schemaHighlight}
-                  onRunCheck={runCheckAndRemember}
+                  onRunCheck={runCheck}
                   onSaveCurrentYaml={openSaveDialog}
                   onUpdateField={updateField}
-                  recentUrls={recentUrls}
                 />
                 <button
                   aria-label="Resize request and results panels"
