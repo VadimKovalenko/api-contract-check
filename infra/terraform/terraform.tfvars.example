@@ -1,5 +1,5 @@
-aws_region          = "us-east-1"
-availability_zone   = "us-east-1a"
+aws_region          = "eu-west-2"
+availability_zone   = "eu-west-2a"
 app_name            = "api-contract-check"
 blueprint_id        = "ubuntu_24_04"
 bundle_id           = "nano_3_0"

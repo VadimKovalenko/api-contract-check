@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "AWS region for Lightsail and Route 53 API calls."
   type        = string
-  default     = "us-east-1"
+  default     = "eu-west-2"
 }
 
 variable "app_name" {
@@ -11,9 +11,9 @@ variable "app_name" {
 }
 
 variable "availability_zone" {
-  description = "Lightsail availability zone, for example us-east-1a."
+  description = "Lightsail availability zone, for example eu-west-2a."
   type        = string
-  default     = "us-east-1a"
+  default     = "eu-west-2a"
 }
 
 variable "blueprint_id" {
