@@ -9,6 +9,12 @@ ARTIFACT="/tmp/api-contract-check-${RELEASE_VERSION}.tar.gz"
 RELEASES_DIR="${APP_DIR}/releases"
 RELEASE_DIR="${RELEASES_DIR}/${RELEASE_VERSION}"
 HEALTH_CHECK_ATTEMPTS=10
+APP_DOMAIN="api-checker.dev"
+TLS_DIR="/etc/api-contract-check/tls"
+TLS_CERT="${TLS_DIR}/fullchain.pem"
+TLS_KEY="${TLS_DIR}/privkey.pem"
+LE_CERT="/etc/letsencrypt/live/${APP_DOMAIN}/fullchain.pem"
+LE_KEY="/etc/letsencrypt/live/${APP_DOMAIN}/privkey.pem"
 
 wait_for_endpoint() {
   local endpoint="$1"
@@ -23,6 +29,26 @@ wait_for_endpoint() {
 
   echo "Endpoint did not become healthy: ${endpoint}" >&2
   return 1
+}
+
+ensure_tls_certificate() {
+  sudo install -d -o root -g root -m 0755 "${TLS_DIR}"
+
+  if sudo test -f "${LE_CERT}" && sudo test -f "${LE_KEY}"; then
+    sudo ln -sfn "${LE_CERT}" "${TLS_CERT}"
+    sudo ln -sfn "${LE_KEY}" "${TLS_KEY}"
+    return
+  fi
+
+  if sudo test -f "${TLS_CERT}" && sudo test -f "${TLS_KEY}"; then
+    return
+  fi
+
+  sudo openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 3650 \
+    -subj "/CN=${APP_DOMAIN}" \
+    -keyout "${TLS_KEY}" \
+    -out "${TLS_CERT}"
+  sudo chmod 600 "${TLS_KEY}"
 }
 
 if [ ! -f "${ARTIFACT}" ]; then
@@ -47,6 +73,7 @@ if sudo test -e "${APP_DIR}/current" && ! sudo test -L "${APP_DIR}/current"; the
 fi
 
 sudo ln -sfn "${RELEASE_DIR}" "${APP_DIR}/current"
+ensure_tls_certificate
 sudo install -D -o root -g root -m 0644 \
   "${RELEASE_DIR}/infra/systemd/${SERVICE_NAME}.service" \
   "/etc/systemd/system/${SERVICE_NAME}.service"

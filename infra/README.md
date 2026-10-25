@@ -104,4 +104,11 @@ sudo systemctl restart api-contract-check nginx
 
 ## TLS
 
-Port 443 is opened for TLS, but certificates are not automated yet. Add Certbot or an ACM-backed load balancer/distribution before sending real production traffic over credentials or sensitive payloads.
+The release script configures nginx for HTTPS on `api-checker.dev`. It reuses an existing
+Let's Encrypt certificate at `/etc/letsencrypt/live/api-checker.dev/` when present. Otherwise,
+it creates a private, self-signed origin certificate under `/etc/api-contract-check/tls/`; this
+supports Cloudflare **Full** mode but not **Full (strict)**.
+
+For a long-lived production setup, use a renewable Let's Encrypt certificate or Cloudflare Origin
+Certificate and configure Cloudflare for **Full (strict)** before handling credentials or sensitive
+payloads.
