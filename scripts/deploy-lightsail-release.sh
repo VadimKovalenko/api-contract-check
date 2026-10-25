@@ -20,8 +20,7 @@ sudo install -d -o "${APP_USER}" -g "${APP_USER}" -m 0755 "${RELEASE_DIR}"
 sudo tar -xzf "${ARTIFACT}" -C "${RELEASE_DIR}"
 sudo chown -R "${APP_USER}:${APP_USER}" "${RELEASE_DIR}"
 
-cd "${RELEASE_DIR}"
-sudo -u "${APP_USER}" npm ci --omit=dev
+sudo -u "${APP_USER}" bash -c 'cd "$1" && npm ci --omit=dev' -- "${RELEASE_DIR}"
 
 if [ -e "${APP_DIR}/current" ] && [ ! -L "${APP_DIR}/current" ]; then
   sudo mv "${APP_DIR}/current" "${RELEASES_DIR}/previous-manual-$(date -u +%Y%m%d%H%M%S)"
