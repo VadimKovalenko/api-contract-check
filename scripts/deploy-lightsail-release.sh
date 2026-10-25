@@ -8,6 +8,22 @@ RELEASE_VERSION="${RELEASE_VERSION:?RELEASE_VERSION is required}"
 ARTIFACT="/tmp/api-contract-check-${RELEASE_VERSION}.tar.gz"
 RELEASES_DIR="${APP_DIR}/releases"
 RELEASE_DIR="${RELEASES_DIR}/${RELEASE_VERSION}"
+HEALTH_CHECK_ATTEMPTS=10
+
+wait_for_endpoint() {
+  local endpoint="$1"
+
+  for ((attempt = 1; attempt <= HEALTH_CHECK_ATTEMPTS; attempt += 1)); do
+    if curl -fsS "${endpoint}" >/dev/null 2>&1; then
+      return 0
+    fi
+
+    sleep 1
+  done
+
+  echo "Endpoint did not become healthy: ${endpoint}" >&2
+  return 1
+}
 
 if [ ! -f "${ARTIFACT}" ]; then
   echo "Missing release artifact: ${ARTIFACT}" >&2
@@ -45,5 +61,5 @@ sudo systemctl enable "${SERVICE_NAME}"
 sudo systemctl restart "${SERVICE_NAME}"
 sudo systemctl reload nginx
 
-curl -fsS http://127.0.0.1/api/health >/dev/null
-curl -fsS http://127.0.0.1/ >/dev/null
+wait_for_endpoint http://127.0.0.1/api/health
+wait_for_endpoint http://127.0.0.1/
