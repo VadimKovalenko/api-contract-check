@@ -96,14 +96,22 @@
 }
 
 .brand-icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
-  color: var(--color-text-on-accent);
-  background: linear-gradient(135deg, var(--color-accent), var(--color-cool));
-  border-radius: 8px;
-  box-shadow: 0 14px 32px var(--color-action-shadow);
+  overflow: hidden;
+  background: var(--color-transparent);
+  border: 1px solid var(--color-transparent);
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(1.2);
 }
 
 .nav-tabs {

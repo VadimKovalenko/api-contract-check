@@ -4,6 +4,10 @@ This project creates releases from version tags. Pushing a tag that starts with
 `v` runs the GitHub Actions release workflow. For example, `v1.2.0` creates a
 release; a normal push to `main` does not deploy the application.
 
+The deployed client embeds that tag in its environment status label. For a local
+build that is not made from a release tag, the label falls back to the version
+in `package.json`.
+
 ## One-time production setup
 
 Complete these steps before the first production deployment:

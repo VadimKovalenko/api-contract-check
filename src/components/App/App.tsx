@@ -1,4 +1,4 @@
-import { Box, ExternalLink, Loader2, Moon, Play, Save, ShieldCheck, Sun, X } from 'lucide-react';
+import { ExternalLink, Loader2, Moon, Play, Save, ShieldCheck, Sun, X } from 'lucide-react';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { MyYamls } from '../MyYamls';
 import { RequestForm } from '../RequestForm';
 import { ResultsPanel } from '../ResultsPanel';
 import { useModalAccessibility } from '../useModalAccessibility';
+import apiCheckerLogo from '../../assets/api-checker-logo.png';
 import { vantaFogColors } from '../../colors';
 import { metricCards } from './constants';
 import {
@@ -285,9 +286,9 @@ export function App() {
         <nav className="app-nav" aria-label="Primary navigation">
         <NavLink className="brand-mark" to="/">
           <span className="brand-icon" aria-hidden="true">
-            <Box size={18} />
+            <img alt="" className="brand-logo" src={apiCheckerLogo} />
           </span>
-          <span>Contract Monitor</span>
+          <span>API Checker</span>
         </NavLink>
         {featureFlags.showTopNavigation ? (
           <div className="nav-tabs" aria-label="Sections" style={navTabsStyle}>
@@ -348,7 +349,7 @@ export function App() {
                 <div className="hero-status" aria-label="Environment status">
                   <span>ENV</span>
                   <strong>prod</strong>
-                  <span>v1.0.0</span>
+                  <span title={`Release ${__APP_RELEASE_VERSION__}`}>{__APP_RELEASE_VERSION__}</span>
                 </div>
               </section>
 

@@ -1,4 +1,4 @@
-# API Schema Coverage Dashboard
+# API Checker
 
 A small React and Express app for checking a GET endpoint response against an OpenAPI-style YAML schema. The client provides a form for the target URL, optional authorization, and schema input. The server fetches the endpoint, parses the JSON response, validates it, and returns a compact coverage report.
 
