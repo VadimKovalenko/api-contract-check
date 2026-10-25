@@ -1,4 +1,4 @@
-import express, { type Request, type Response } from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import cors from 'cors';
 import {
   buildHeaders,
@@ -10,6 +10,36 @@ import type { CheckRequestBody, OutboundFetch } from './types.js';
 
 const HTTP_BAD_REQUEST = 400;
 const HTTP_BAD_GATEWAY = 502;
+const HTTP_TOO_MANY_REQUESTS = 429;
+const CHECK_THROTTLE_MS = 1000;
+
+function createCheckThrottle() {
+  const nextAllowedAtByClient = new Map<string, number>();
+
+  return (req: Request, res: Response, next: NextFunction) => {
+    const now = Date.now();
+
+    for (const [client, nextAllowedAt] of nextAllowedAtByClient) {
+      if (nextAllowedAt <= now) {
+        nextAllowedAtByClient.delete(client);
+      }
+    }
+
+    const client = req.socket.remoteAddress ?? 'unknown';
+    const nextAllowedAt = nextAllowedAtByClient.get(client) ?? 0;
+
+    if (now < nextAllowedAt) {
+      const retryAfterSeconds = Math.max(1, Math.ceil((nextAllowedAt - now) / 1000));
+      res.set('Retry-After', String(retryAfterSeconds));
+      return res.status(HTTP_TOO_MANY_REQUESTS).json({
+        error: 'Please wait before running another check.',
+      });
+    }
+
+    nextAllowedAtByClient.set(client, now + CHECK_THROTTLE_MS);
+    return next();
+  };
+}
 
 export function createApp({ outboundFetch = fetchEndpoint }: { outboundFetch?: OutboundFetch } = {}) {
   const app = express();
@@ -17,7 +47,7 @@ export function createApp({ outboundFetch = fetchEndpoint }: { outboundFetch?: O
   app.use(cors());
   app.use(express.json({ limit: '2mb' }));
 
-  app.post('/api/check', async (req: Request<unknown, unknown, CheckRequestBody>, res: Response) => {
+  app.post('/api/check', createCheckThrottle(), async (req: Request<unknown, unknown, CheckRequestBody>, res: Response) => {
     const started = performance.now();
 
     try {

@@ -360,6 +360,50 @@ test('POST /api/check fetches JSON and returns validation and coverage', async (
   }
 });
 
+test('POST /api/check limits each client to one request per second', async () => {
+  let fetchCount = 0;
+  const app = createApp({
+    outboundFetch: async () => {
+      fetchCount += 1;
+      return {
+        status: 200,
+        ok: true,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 1, name: 'Ada' }),
+      };
+    },
+  });
+
+  const server = app.listen(0);
+  await new Promise((resolve) => server.once('listening', resolve));
+
+  try {
+    const { port } = server.address();
+    const request = () => fetch('http://127.0.0.1:' + port + '/api/check', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        url: 'https://api.example.test/users/1',
+        auth: { type: 'none' },
+        yamlSpec,
+      }),
+    });
+
+    const firstResponse = await request();
+    const secondResponse = await request();
+
+    assert.equal(firstResponse.status, 200);
+    assert.equal(secondResponse.status, 429);
+    assert.equal(secondResponse.headers.get('retry-after'), '1');
+    assert.deepEqual(await secondResponse.json(), {
+      error: 'Please wait before running another check.',
+    });
+    assert.equal(fetchCount, 1);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
 test('outbound worker rejects loopback targets before making a request', async () => {
   await assert.rejects(
     () => fetchEndpoint({
