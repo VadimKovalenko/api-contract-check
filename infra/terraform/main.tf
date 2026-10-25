@@ -24,7 +24,6 @@ resource "aws_lightsail_instance" "app" {
   blueprint_id      = var.blueprint_id
   bundle_id         = var.bundle_id
   key_pair_name     = var.ssh_key_pair_name
-  user_data         = file("${path.module}/user-data.sh")
   tags              = local.tags
 
   add_on {

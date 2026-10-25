@@ -6,8 +6,6 @@ This directory contains a first production-oriented deployment baseline for runn
 
 ```text
 infra/
-  nginx/       nginx site config for serving dist/ and proxying /api
-  systemd/     systemd service for the Node API
   terraform/   Lightsail, static IP, firewall, and Route 53 records
 ```
 
@@ -49,7 +47,9 @@ Terraform creates:
 - Route 53 `A` record pointing the app domain at the static IP
 - Optional `www` CNAME when `create_www_record = true`
 
-The instance bootstrap installs Node.js 20, nginx, creates an `app` user, writes the nginx/systemd configs, and enables nginx. The app service is installed but will not become healthy until application code is deployed into `/opt/api-contract-check/current`.
+Server bootstrap is managed separately from Terraform. The deployment workflow expects the
+host to already provide Node.js 20, nginx, the `app` service account, and the
+`api-contract-check` systemd unit.
 
 ## Deploy App Code
 
