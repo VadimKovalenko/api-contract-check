@@ -75,10 +75,15 @@ Release and downloadable artifact, but the deployment job is skipped.
 
 ## If a release fails
 
-Do not retag an existing version. Fix the issue in a new commit, validate it,
-then publish the next unused version tag. If the failure is in the deployment
-job, inspect the GitHub Actions logs and the Lightsail service/nginx logs before
-retrying with a new release tag.
+You can rerun failed jobs for the same tag when the failure is caused by a
+transient GitHub Actions, artifact, or deployment problem. The workflow safely
+replaces the uploaded artifact and refreshes that release's matching asset on a
+rerun.
+
+Do not move or recreate an existing tag. If fixing the failure requires a code
+change, commit the fix, validate it, and publish the next unused version tag.
+For a deployment failure, inspect the GitHub Actions logs and the Lightsail
+service/nginx logs before deciding whether a rerun or new release is required.
 
 ## Roll back a Lightsail deployment
 
