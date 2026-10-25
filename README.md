@@ -2,6 +2,8 @@
 
 A small React and Express app for checking a GET endpoint response against an OpenAPI-style YAML schema. The client provides a form for the target URL, optional authorization, and schema input. The server fetches the endpoint, parses the JSON response, validates it, and returns a compact coverage report.
 
+<img width="1740" height="1309" alt="api-checker-v1" src="https://github.com/user-attachments/assets/6f2cab33-ffc5-48e9-a579-92c7f1ffc64f" />
+
 ## Requirements
 
 - Node.js 20 or newer
