@@ -41,8 +41,9 @@ jobs:
 
       - name: Package runtime files
         run: |
-          mkdir -p release-package
+          mkdir -p release-package/infra
           cp -R dist dist-server package.json package-lock.json release-package/
+          cp -R infra/nginx infra/systemd release-package/infra/
           tar -czf "api-contract-check-${GITHUB_REF_NAME}.tar.gz" -C release-package .
 
       - name: Upload release artifact

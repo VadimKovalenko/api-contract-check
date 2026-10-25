@@ -66,8 +66,9 @@ Release and downloadable artifact, but the deployment job is skipped.
 6. If production deployment is configured, wait for **Deploy to Lightsail** to
    complete. It copies the release archive to the server, installs production
    dependencies, switches `/opt/api-contract-check/current` to the new
-   versioned release, restarts the application service, reloads nginx, and
-   checks the local HTTP endpoint.
+   versioned release, installs the nginx and systemd templates, restarts the
+   application service, reloads nginx, and checks the local HTTP and API
+   endpoints.
 
 7. Verify the public application manually after deployment. Check the GitHub
    Release page for its artifact and notes, then test the production URL and a

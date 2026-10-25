@@ -6,6 +6,8 @@ This directory contains a first production-oriented deployment baseline for runn
 
 ```text
 infra/
+  nginx/       nginx site template installed by releases
+  systemd/     systemd unit template installed by releases
   terraform/   Lightsail, static IP, firewall, and Route 53 records
 ```
 
@@ -48,8 +50,9 @@ Terraform creates:
 - Optional `www` CNAME when `create_www_record = true`
 
 Server bootstrap is managed separately from Terraform. The deployment workflow expects the
-host to already provide Node.js 20, nginx, the `app` service account, and the
-`api-contract-check` systemd unit.
+host to already provide Node.js 20 and nginx. Each release creates the `app` service account
+when needed, installs the nginx site and systemd unit from the release artifact, and enables
+both services.
 
 ## Deploy App Code
 
@@ -77,8 +80,8 @@ and add:
 When `LIGHTSAIL_HOST` is set, each `v*` tag copies the release archive to the
 instance, extracts it under `/opt/api-contract-check/releases/<tag>`, installs
 production dependencies, points `/opt/api-contract-check/current` at that
-release, restarts the systemd service, reloads nginx, and checks the local nginx
-response.
+release, installs the nginx site and systemd unit, restarts the service, reloads
+nginx, and checks the local nginx and API responses.
 
 One manual deployment path, useful before GitHub Actions is connected:
 
