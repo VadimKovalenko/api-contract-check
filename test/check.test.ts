@@ -404,7 +404,7 @@ test('POST /api/check limits each client to one request per second', async () =>
   }
 });
 
-test('outbound worker rejects loopback targets before making a request', async () => {
+test('outbound fetch rejects loopback targets before making a request', async () => {
   await assert.rejects(
     () => fetchEndpoint({
       url: 'http://127.0.0.1:1/private',
